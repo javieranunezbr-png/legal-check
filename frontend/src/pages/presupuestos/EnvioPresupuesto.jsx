@@ -108,10 +108,39 @@ export default function EnvioPresupuesto({
   }
 
   return (
-    <div className="card bg-blue-50 border-blue-100 space-y-3">
+    <div className="card bg-blue-50 border-blue-200 space-y-4">
       <div>
-        <p className="text-xs font-semibold text-blue-900 uppercase tracking-wide mb-2">
-          Enviar presupuesto al prospecto
+        <p className="text-sm font-bold text-blue-900 mb-1">
+          📤 Enviar presupuesto al prospecto
+        </p>
+        <p className="text-xs text-blue-800 mb-3">
+          Elige cómo quieres enviarle el link. Puedes editar el mensaje antes.
+        </p>
+
+        {/* Botones prominentes de envío */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={abrirCorreo}
+            className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg bg-[#1e3a5f] text-white text-sm font-semibold hover:bg-[#16314f] shadow-sm"
+          >
+            <span className="text-lg">📧</span>
+            <span>Enviar por correo</span>
+          </button>
+          <button
+            type="button"
+            onClick={abrirWhatsapp}
+            className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] shadow-sm"
+          >
+            <span className="text-lg">💬</span>
+            <span>Enviar por WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="pt-3 border-t border-blue-200">
+        <p className="text-xs font-medium text-blue-900 mb-1.5">
+          O copia el link manualmente:
         </p>
         <div className="flex gap-2 items-center">
           <input readOnly value={link} className="input flex-1 text-xs font-mono bg-white" />
@@ -123,23 +152,6 @@ export default function EnvioPresupuesto({
             Copiar
           </button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={abrirCorreo}
-          className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50"
-        >
-          <span>📧</span> Enviar por correo
-        </button>
-        <button
-          type="button"
-          onClick={abrirWhatsapp}
-          className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#25D366] text-white text-sm font-medium hover:bg-[#20bd5a]"
-        >
-          <span>💬</span> Enviar por WhatsApp
-        </button>
       </div>
 
       {/* Modal Correo */}
