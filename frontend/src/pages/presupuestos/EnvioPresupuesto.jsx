@@ -39,6 +39,7 @@ function Modal({ titulo, children, onClose }) {
 
 export default function EnvioPresupuesto({
   presupuestoId, nombreProspecto, correoProspecto, telefonoProspecto,
+  estado, primerPagoRecibidoEn, portalToken, onPrimerPagoMarcado,
   ensureSaved, onGuardarBorrador, permiteEliminar,
 }) {
   const navigate = useNavigate()
@@ -172,12 +173,123 @@ export default function EnvioPresupuesto({
   const hayCorreo   = Boolean(correoProspecto?.trim())
   const hayTelefono = Boolean(telefonoProspecto?.trim())
 
+  // ---------- Primer pago + portal del cliente ----------
+  const [marcandoPago, setMarcandoPago] = useState(false)
+  const portalLink = portalToken ? `${window.location.origin}/ingreso/${portalToken}` : null
+
+  const handleMarcarPrimerPago = async () => {
+    if (!presupuestoId) return
+    if (!confirm('¿Confirmas que recibiste el primer pago?\n\nSe generará un link de ingreso para que el cliente complete sus datos.')) return
+    setMarcandoPago(true)
+    try {
+      const { data } = await api.post(`/portal/presupuesto/${presupuestoId}/marcar-primer-pago`)
+      onPrimerPagoMarcado?.(data.portal_token)
+      setToast('Primer pago registrado')
+    } catch (err) {
+      setErrorGlobal(err.response?.data?.mensaje || 'Error al marcar primer pago')
+    } finally {
+      setMarcandoPago(false)
+    }
+  }
+
+  const handleCopiarPortal = async () => {
+    if (!portalLink) return
+    await navigator.clipboard.writeText(portalLink)
+    setToast('¡Link del portal copiado!')
+  }
+
+  const enviarPortalCorreo = () => {
+    if (!portalLink || !correoProspecto) return
+    const asunto = encodeURIComponent('Completa tus datos - Law Kit')
+    const cuerpo = encodeURIComponent(
+      `Hola ${nombreProspecto || ''},\n\nRecibimos tu primer pago. Por favor completa tus datos en el siguiente link para que podamos ingresarte formalmente como cliente:\n\n${portalLink}\n\nGracias.`
+    )
+    window.location.href = `mailto:${correoProspecto}?subject=${asunto}&body=${cuerpo}`
+  }
+
+  const enviarPortalWhatsapp = () => {
+    if (!portalLink) return
+    const tel = telefonoParaWhatsapp(telefonoProspecto)
+    const texto = encodeURIComponent(
+      `Hola ${nombreProspecto || ''}, recibimos tu primer pago. Completa tus datos aquí para ingresarte como cliente: ${portalLink}`
+    )
+    const url = tel ? `https://wa.me/${tel}?text=${texto}` : `https://wa.me/?text=${texto}`
+    window.open(url, '_blank')
+  }
+
+  const mostrarPrimerPago = estado === 'aceptado' && !primerPagoRecibidoEn && presupuestoId
+  const mostrarPortal     = Boolean(primerPagoRecibidoEn && portalLink)
+
   return (
     <>
       {/* Toast flotante */}
       {toast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[70] bg-emerald-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-lg">
           ✓ {toast}
+        </div>
+      )}
+
+      {/* Banner portal del cliente (Sprint 3) */}
+      {(mostrarPrimerPago || mostrarPortal) && (
+        <div className="max-w-3xl mx-auto mb-4">
+          {mostrarPrimerPago && (
+            <div className="card border-2 border-emerald-200 bg-emerald-50/50 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">💰</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-800 text-sm">Presupuesto aceptado</h3>
+                  <p className="text-xs text-slate-600 mt-1">
+                    Cuando recibas el primer pago, márcalo aquí. Se generará un link para que el cliente complete sus datos y quede ingresado formalmente.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleMarcarPrimerPago}
+                disabled={marcandoPago}
+                className="w-full px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50"
+              >
+                {marcandoPago ? 'Registrando...' : '✓ Marcar primer pago recibido'}
+              </button>
+            </div>
+          )}
+          {mostrarPortal && (
+            <div className="card border-2 border-blue-200 bg-blue-50/40 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg flex-shrink-0">📋</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-800 text-sm">Portal del cliente activado</h3>
+                  <p className="text-xs text-slate-600 mt-1">
+                    Envíale este link al cliente para que complete sus datos y pase a estado <b>activo</b>.
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-2.5 border border-slate-200 text-xs text-slate-600 break-all font-mono">
+                {portalLink}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopiarPortal}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50"
+                >🔗 Copiar link</button>
+                {correoProspecto && (
+                  <button
+                    type="button"
+                    onClick={enviarPortalCorreo}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#1e3a5f] text-white text-xs font-semibold hover:bg-[#16314f]"
+                  >📧 Enviar por correo</button>
+                )}
+                {telefonoProspecto && (
+                  <button
+                    type="button"
+                    onClick={enviarPortalWhatsapp}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#25D366] text-white text-xs font-semibold hover:bg-[#20bd5a]"
+                  >💬 Enviar por WhatsApp</button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -11,6 +11,7 @@ const cuotasRoutes    = require('./modules/cuotas/cuotas.routes');
 const dashboardRoutes    = require('./modules/dashboard/dashboard.routes');
 const presupuestosRoutes = require('./modules/presupuestos/presupuestos.routes');
 const gestionesRoutes    = require('./modules/gestiones/gestiones.routes');
+const portalRoutes       = require('./modules/portal/portal.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -28,6 +29,7 @@ app.use('/api/cuotas',    cuotasRoutes);
 app.use('/api/dashboard',    dashboardRoutes);
 app.use('/api/presupuestos', presupuestosRoutes);
 app.use('/api/gestiones',    gestionesRoutes);
+app.use('/api/portal',       portalRoutes);
 
 // Health check
 app.get('/api/health', (_, res) => res.json({ estado: 'OK' }));

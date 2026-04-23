@@ -17,6 +17,7 @@ import PresupuestosLista  from './pages/presupuestos/PresupuestosLista'
 import PresupuestoForm    from './pages/presupuestos/PresupuestoForm'
 import PresupuestoPublico from './pages/presupuestos/PresupuestoPublico'
 import GestionesCatalogo  from './pages/presupuestos/GestionesCatalogo'
+import PortalCliente      from './pages/portal/PortalCliente'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
       {/* Públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/presupuesto/:token" element={<PresupuestoPublico />} />
+      <Route path="/ingreso/:token"     element={<PortalCliente />} />
 
       {/* Privadas */}
       <Route element={<PrivateRoute />}>
