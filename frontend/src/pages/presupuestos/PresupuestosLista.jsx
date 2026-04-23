@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import api from '../../services/api'
 import { useApi } from '../../hooks/useApi'
 import Spinner from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
@@ -16,7 +17,17 @@ const clp = (n) =>
     .format(Number(n) || 0)
 
 export default function PresupuestosLista() {
-  const { data: presupuestos, loading, error } = useApi('/presupuestos')
+  const { data: presupuestos, loading, error, refetch } = useApi('/presupuestos')
+
+  const eliminar = async (p) => {
+    if (!confirm(`¿Estás seguro que deseas eliminar este presupuesto?\n\nProspecto: ${p.nombre_prospecto}`)) return
+    try {
+      await api.delete(`/presupuestos/${p.id}`)
+      refetch()
+    } catch (err) {
+      alert(err.response?.data?.mensaje || 'Error al eliminar presupuesto')
+    }
+  }
   const [busqueda, setBusqueda]         = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
 
@@ -154,6 +165,12 @@ export default function PresupuestosLista() {
                           className="text-slate-400 hover:text-slate-600 text-xs"
                         >
                           Copiar link
+                        </button>
+                        <button
+                          onClick={() => eliminar(p)}
+                          className="text-slate-400 hover:text-red-600 text-xs"
+                        >
+                          Eliminar
                         </button>
                       </div>
                     </td>

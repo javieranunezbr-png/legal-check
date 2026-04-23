@@ -46,7 +46,6 @@ export default function PresupuestoForm() {
   const [token, setToken]         = useState('')
   const [idActual, setIdActual]   = useState(id || null)
   const [loading, setLoading]     = useState(esEdicion)
-  const [guardando, setGuardando] = useState(false)
   const [error, setError]         = useState('')
 
   useEffect(() => {
@@ -175,30 +174,18 @@ export default function PresupuestoForm() {
   }
 
   /**
-   * Handler del botón "Guardar borrador" / "Crear y enviar" del pie del formulario.
+   * Handler para "Guardar borrador" de la barra inferior (se queda en la página).
    */
-  const handleSubmit = async (e, nuevoEstado) => {
-    e.preventDefault()
-    setGuardando(true)
+  const handleGuardarBorrador = async () => {
     setError('')
-    try {
-      await guardarPresupuesto(nuevoEstado)
-      navigate('/presupuestos')
-    } catch (err) {
-      setError(err.response?.data?.mensaje || err.message || 'Error al guardar el presupuesto')
-    } finally {
-      setGuardando(false)
-    }
+    await guardarPresupuesto('borrador')
   }
 
   /**
    * Asegura que exista un presupuesto guardado antes de enviar/copiar.
-   * Si no existe, lo guarda como borrador automáticamente.
-   * Usado por EnvioPresupuesto.
    */
   const ensureSaved = async () => {
     if (idActual && token) {
-      // Ya existe. Guardamos cambios pendientes antes de enviar para que el link tenga datos actualizados.
       await guardarPresupuesto(form.estado || 'borrador')
       return { id: idActual, token }
     }
@@ -213,7 +200,7 @@ export default function PresupuestoForm() {
   if (loading) return <Spinner />
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Link to="/presupuestos" className="text-slate-400 hover:text-slate-600">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,16 +219,7 @@ export default function PresupuestoForm() {
 
       {error && <AlertaBanner mensaje={error} onClose={() => setError('')} />}
 
-      <EnvioPresupuesto
-        presupuestoId={idActual}
-        link={linkPublico}
-        nombreProspecto={form.nombre_prospecto}
-        correoProspecto={form.correo}
-        telefonoProspecto={form.telefono}
-        ensureSaved={ensureSaved}
-      />
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
 
         {/* Prospecto */}
         <div className="card space-y-4">
@@ -424,28 +402,17 @@ export default function PresupuestoForm() {
           </Campo>
         </div>
 
-        <div className="flex items-center justify-between gap-3 pb-6 flex-wrap">
-          <Link to="/presupuestos" className="btn-secondary">Cancelar</Link>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={(e) => handleSubmit(e, 'borrador')}
-              disabled={guardando}
-              className="btn-secondary"
-            >
-              {guardando ? 'Guardando...' : 'Guardar borrador'}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => handleSubmit(e, 'enviado')}
-              disabled={guardando}
-              className="btn-primary"
-            >
-              {guardando ? 'Guardando...' : esEdicion ? 'Marcar como enviado' : 'Crear y enviar'}
-            </button>
-          </div>
-        </div>
       </form>
+
+      <EnvioPresupuesto
+        presupuestoId={idActual}
+        nombreProspecto={form.nombre_prospecto}
+        correoProspecto={form.correo}
+        telefonoProspecto={form.telefono}
+        ensureSaved={ensureSaved}
+        onGuardarBorrador={handleGuardarBorrador}
+        permiteEliminar={Boolean(idActual)}
+      />
     </div>
   )
 }
