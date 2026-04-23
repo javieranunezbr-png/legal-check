@@ -12,16 +12,11 @@ if (esProduccion && !process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-const url = process.env.DATABASE_URL || '';
-const esInterno = url.includes('railway.internal');
-
-// Interno Railway: sin SSL. Proxy público/otros hosts: SSL con cert relajado.
-const sslConfig = esInterno ? false : { rejectUnauthorized: false };
-
+// Railway Postgres requiere SSL incluso en la red interna.
 const pool = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: sslConfig,
+      ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 10000,
     })
   : new Pool({
