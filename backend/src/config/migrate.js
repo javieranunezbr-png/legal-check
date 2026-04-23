@@ -6,7 +6,26 @@ const pool = require('./db');
 const MIGRATIONS_DIR = path.join(__dirname, '../../migrations');
 
 async function run() {
-  const client = await pool.connect();
+  let client;
+  let intentos = 0;
+  const MAX_INTENTOS = 5;
+
+  // Reintentar conexión si Postgres no está listo (común en Railway)
+  while (intentos < MAX_INTENTOS) {
+    try {
+      client = await pool.connect();
+      break;
+    } catch (err) {
+      intentos++;
+      if (intentos >= MAX_INTENTOS) {
+        console.error(`Imposible conectar a Postgres después de ${MAX_INTENTOS} intentos:`, err.message);
+        process.exit(1);
+      }
+      console.log(`Intento ${intentos} falló, esperando 2s...`);
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS _migraciones (
