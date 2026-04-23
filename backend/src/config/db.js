@@ -1,4 +1,9 @@
 const { Pool } = require('pg');
+const dns = require('dns');
+
+// Railway resuelve postgres.railway.internal solo por IPv6.
+// Sin esto, Node reordena a IPv4 y el handshake se cae.
+dns.setDefaultResultOrder('verbatim');
 
 const esProduccion = process.env.NODE_ENV === 'production';
 
