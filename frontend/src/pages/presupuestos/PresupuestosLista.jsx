@@ -42,9 +42,14 @@ export default function PresupuestosLista() {
           <h1 className="text-xl font-bold text-slate-800">Presupuestos</h1>
           <p className="text-sm text-slate-500">{presupuestos.length} presupuestos en total</p>
         </div>
-        <Link to="/presupuestos/nuevo" className="btn-primary">
-          + Nuevo presupuesto
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/presupuestos/gestiones" className="btn-secondary">
+            Catálogo de gestiones
+          </Link>
+          <Link to="/presupuestos/nuevo" className="btn-primary">
+            + Nuevo presupuesto
+          </Link>
+        </div>
       </div>
 
       <div className="card p-4">

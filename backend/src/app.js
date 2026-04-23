@@ -10,6 +10,7 @@ const acuerdosRoutes  = require('./modules/acuerdos/acuerdos.routes');
 const cuotasRoutes    = require('./modules/cuotas/cuotas.routes');
 const dashboardRoutes    = require('./modules/dashboard/dashboard.routes');
 const presupuestosRoutes = require('./modules/presupuestos/presupuestos.routes');
+const gestionesRoutes    = require('./modules/gestiones/gestiones.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.use('/api/acuerdos',  acuerdosRoutes);
 app.use('/api/cuotas',    cuotasRoutes);
 app.use('/api/dashboard',    dashboardRoutes);
 app.use('/api/presupuestos', presupuestosRoutes);
+app.use('/api/gestiones',    gestionesRoutes);
 
 // Health check
 app.get('/api/health', (_, res) => res.json({ estado: 'OK' }));

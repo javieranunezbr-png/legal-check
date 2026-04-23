@@ -16,6 +16,7 @@ import UsuariosAdmin   from './pages/admin/UsuariosAdmin'
 import PresupuestosLista  from './pages/presupuestos/PresupuestosLista'
 import PresupuestoForm    from './pages/presupuestos/PresupuestoForm'
 import PresupuestoPublico from './pages/presupuestos/PresupuestoPublico'
+import GestionesCatalogo  from './pages/presupuestos/GestionesCatalogo'
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
 
           {/* Presupuestos */}
           <Route path="/presupuestos"             element={<PresupuestosLista />} />
+          <Route path="/presupuestos/gestiones"   element={<GestionesCatalogo />} />
           <Route path="/presupuestos/nuevo"       element={<PresupuestoForm />} />
           <Route path="/presupuestos/:id/editar"  element={<PresupuestoForm />} />
 

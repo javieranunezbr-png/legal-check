@@ -64,8 +64,6 @@ export default function PresupuestoPublico() {
     )
   }
 
-  const totalCuotas = (Number(p.monto_cuota) || 0) * (Number(p.numero_cuotas) || 0)
-
   return (
     <div className="min-h-screen bg-slate-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
@@ -139,6 +137,31 @@ export default function PresupuestoPublico() {
               </div>
             )}
 
+            {p.items?.length > 0 && (
+              <div className="pt-4 border-t border-slate-100">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                  Gestiones incluidas
+                </p>
+                <div className="space-y-3">
+                  {p.items.map((it, i) => (
+                    <div key={it.id || i} className="border border-slate-100 rounded-lg p-3">
+                      <div className="flex justify-between items-start gap-3">
+                        <p className="font-medium text-slate-800 text-sm">{it.nombre}</p>
+                        <p className="font-semibold text-slate-800 text-sm whitespace-nowrap">
+                          {clp(it.precio)}
+                        </p>
+                      </div>
+                      {it.detalle && (
+                        <p className="text-xs text-slate-500 mt-1 whitespace-pre-line leading-relaxed">
+                          {it.detalle}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="pt-4 border-t border-slate-100">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                 Honorarios
@@ -160,12 +183,6 @@ export default function PresupuestoPublico() {
                   <div className="flex justify-between">
                     <span className="text-slate-600">Primera cuota</span>
                     <span className="text-slate-700 capitalize">{formatearFecha(p.fecha_primera_cuota)}</span>
-                  </div>
-                )}
-                {totalCuotas > 0 && Number(p.honorarios_total) !== totalCuotas && (
-                  <div className="flex justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
-                    <span>Suma de cuotas</span>
-                    <span>{clp(totalCuotas)}</span>
                   </div>
                 )}
               </div>

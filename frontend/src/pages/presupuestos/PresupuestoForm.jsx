@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import api from '../../services/api'
+import { useApi } from '../../hooks/useApi'
 import AlertaBanner from '../../components/ui/AlertaBanner'
 import Spinner from '../../components/ui/Spinner'
 
@@ -11,9 +12,12 @@ const MATERIAS = [
 
 const VACIO = {
   nombre_prospecto: '', correo: '', telefono: '', descripcion: '',
-  materias: [], honorarios_total: '', numero_cuotas: 1, monto_cuota: '',
+  materias: [], numero_cuotas: 1,
   fecha_primera_cuota: '', notas: '', estado: 'borrador',
+  items: [],
 }
+
+const itemVacio = () => ({ nombre: '', precio: '', detalle: '', gestion_id: null })
 
 const clp = (n) =>
   new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
@@ -35,7 +39,9 @@ export default function PresupuestoForm() {
   const navigate  = useNavigate()
   const esEdicion = Boolean(id)
 
-  const [form, setForm]           = useState(VACIO)
+  const { data: gestionesCatalogo, refetch: refetchGestiones } = useApi('/gestiones')
+
+  const [form, setForm]           = useState({ ...VACIO, items: [itemVacio()] })
   const [token, setToken]         = useState('')
   const [loading, setLoading]     = useState(esEdicion)
   const [guardando, setGuardando] = useState(false)
@@ -51,8 +57,14 @@ export default function PresupuestoForm() {
           ...d,
           materias: d.materias || [],
           fecha_primera_cuota: d.fecha_primera_cuota?.slice(0, 10) || '',
-          honorarios_total: d.honorarios_total || '',
-          monto_cuota: d.monto_cuota || '',
+          items: (d.items && d.items.length > 0)
+            ? d.items.map(it => ({
+                nombre: it.nombre,
+                precio: it.precio,
+                detalle: it.detalle || '',
+                gestion_id: it.gestion_id,
+              }))
+            : [itemVacio()],
         })
         setToken(d.token_unico)
       })
@@ -61,18 +73,9 @@ export default function PresupuestoForm() {
   }, [id, esEdicion])
 
   const set = (e) => {
-    const { name, value, type } = e.target
-    setForm(prev => ({ ...prev, [name]: type === 'number' ? value : value }))
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
   }
-
-  // Auto-calcular monto de cuota si hay total y número de cuotas
-  useEffect(() => {
-    const total = Number(form.honorarios_total)
-    const n     = Number(form.numero_cuotas)
-    if (total > 0 && n > 0) {
-      setForm(prev => ({ ...prev, monto_cuota: Math.round(total / n) }))
-    }
-  }, [form.honorarios_total, form.numero_cuotas])
 
   const toggleMateria = (m) => {
     setForm(prev => ({
@@ -83,26 +86,82 @@ export default function PresupuestoForm() {
     }))
   }
 
+  // ---------- Items ----------
+
+  const setItem = (idx, cambios) => {
+    setForm(prev => ({
+      ...prev,
+      items: prev.items.map((it, i) => i === idx ? { ...it, ...cambios } : it),
+    }))
+  }
+
+  const agregarItem  = () => setForm(prev => ({ ...prev, items: [...prev.items, itemVacio()] }))
+  const quitarItem   = (idx) => setForm(prev => ({
+    ...prev,
+    items: prev.items.length === 1 ? [itemVacio()] : prev.items.filter((_, i) => i !== idx),
+  }))
+
+  // Al elegir una gestión del catálogo, autorrellena precio + detalle
+  const seleccionarGestion = (idx, nombreElegido) => {
+    const g = gestionesCatalogo?.find(x => x.nombre === nombreElegido)
+    if (g) {
+      setItem(idx, {
+        nombre: g.nombre,
+        precio: g.precio_sugerido,
+        detalle: g.descripcion || '',
+        gestion_id: g.id,
+      })
+    } else {
+      setItem(idx, { nombre: nombreElegido, gestion_id: null })
+    }
+  }
+
+  const totalItems = useMemo(
+    () => form.items.reduce((sum, it) => sum + (Number(it.precio) || 0), 0),
+    [form.items]
+  )
+
+  const montoCuota = useMemo(() => {
+    const n = Number(form.numero_cuotas) || 1
+    return n > 0 ? Math.round(totalItems / n) : 0
+  }, [totalItems, form.numero_cuotas])
+
+  // ---------- Submit ----------
+
   const handleSubmit = async (e, nuevoEstado) => {
     e.preventDefault()
     setGuardando(true)
     setError('')
     try {
+      const itemsLimpios = form.items
+        .filter(it => it.nombre && it.nombre.trim())
+        .map(it => ({
+          nombre: it.nombre.trim(),
+          precio: Number(it.precio) || 0,
+          detalle: it.detalle || null,
+          gestion_id: it.gestion_id || null,
+        }))
+
       const payload = {
         ...form,
         estado: nuevoEstado || form.estado,
-        honorarios_total: Number(form.honorarios_total) || 0,
-        numero_cuotas:    Number(form.numero_cuotas)    || 1,
-        monto_cuota:      Number(form.monto_cuota)      || 0,
+        honorarios_total: totalItems,
+        numero_cuotas: Number(form.numero_cuotas) || 1,
+        monto_cuota: montoCuota,
         fecha_primera_cuota: form.fecha_primera_cuota || null,
+        items: itemsLimpios,
       }
+
       if (esEdicion) {
         await api.put(`/presupuestos/${id}`, payload)
-        navigate('/presupuestos')
       } else {
         const { data } = await api.post('/presupuestos', payload)
+        refetchGestiones()
         navigate(`/presupuestos/${data.id}/editar`)
+        return
       }
+      refetchGestiones()
+      navigate('/presupuestos')
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al guardar el presupuesto')
     } finally {
@@ -155,14 +214,12 @@ export default function PresupuestoForm() {
               Copiar
             </button>
           </div>
-          <p className="text-xs text-blue-800 mt-2">
-            Envíale este link al prospecto para que pueda revisar y aceptar o rechazar el presupuesto.
-          </p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
+        {/* Prospecto */}
         <div className="card space-y-4">
           <h2 className="text-sm font-semibold text-slate-700 border-b border-slate-100 pb-2">
             Datos del prospecto
@@ -183,6 +240,7 @@ export default function PresupuestoForm() {
           </div>
         </div>
 
+        {/* Descripción */}
         <div className="card space-y-4">
           <h2 className="text-sm font-semibold text-slate-700 border-b border-slate-100 pb-2">
             Descripción del servicio
@@ -208,43 +266,132 @@ export default function PresupuestoForm() {
               })}
             </div>
           </Campo>
-          <Campo label="Descripción del caso / servicio">
-            <textarea name="descripcion" value={form.descripcion} onChange={set} rows={4}
+          <Campo label="Descripción general (opcional)">
+            <textarea name="descripcion" value={form.descripcion} onChange={set} rows={3}
               className="input resize-none"
-              placeholder="Explica en qué consiste el servicio legal que ofreces..." />
+              placeholder="Contexto general del caso. Las gestiones específicas se detallan abajo." />
           </Campo>
         </div>
 
+        {/* Gestiones / items */}
+        <div className="card space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h2 className="text-sm font-semibold text-slate-700">Gestiones</h2>
+            <span className="text-xs text-slate-400">
+              {form.items.filter(it => it.nombre?.trim()).length} gestión(es)
+            </span>
+          </div>
+
+          <datalist id="catalogo-gestiones">
+            {gestionesCatalogo?.map(g => (
+              <option key={g.id} value={g.nombre} />
+            ))}
+          </datalist>
+
+          <div className="space-y-3">
+            {form.items.map((it, idx) => (
+              <div key={idx} className="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50/50">
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  <div className="sm:col-span-7">
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      Gestión
+                    </label>
+                    <input
+                      list="catalogo-gestiones"
+                      value={it.nombre}
+                      onChange={(e) => seleccionarGestion(idx, e.target.value)}
+                      placeholder="Ej: Demanda alimentos, Redacción contrato..."
+                      className="input"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      Precio (CLP)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value={it.precio}
+                      onChange={(e) => setItem(idx, { precio: e.target.value })}
+                      placeholder="500000"
+                      className="input"
+                    />
+                  </div>
+                  <div className="sm:col-span-1 flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => quitarItem(idx)}
+                      className="w-full h-[38px] rounded-md border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 text-lg"
+                      title="Eliminar gestión"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                    Detalle / qué incluye <span className="text-slate-400 font-normal">(visible para el cliente)</span>
+                  </label>
+                  <textarea
+                    value={it.detalle}
+                    onChange={(e) => setItem(idx, { detalle: e.target.value })}
+                    rows={2}
+                    placeholder="Ej: Incluye redacción, presentación y 2 audiencias."
+                    className="input resize-none text-sm"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={agregarItem}
+            className="w-full py-2 rounded-lg border-2 border-dashed border-slate-200 text-sm font-medium text-slate-500 hover:border-primary hover:text-primary transition-colors"
+          >
+            + Agregar gestión
+          </button>
+
+          {gestionesCatalogo?.length > 0 && (
+            <p className="text-xs text-slate-400">
+              💡 Al escribir el nombre puedes elegir de tu catálogo ({gestionesCatalogo.length} gestión(es) guardada(s)). Las gestiones nuevas se guardan automáticamente para reutilizarlas.
+            </p>
+          )}
+        </div>
+
+        {/* Cuotas y total */}
         <div className="card space-y-4">
           <h2 className="text-sm font-semibold text-slate-700 border-b border-slate-100 pb-2">
-            Honorarios y pagos
+            Forma de pago
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Campo label="Honorarios totales (CLP)" requerido>
-              <input name="honorarios_total" type="number" min="0" step="1000"
-                value={form.honorarios_total} onChange={set} required
-                className="input" placeholder="1500000" />
-            </Campo>
+
+          <div className="bg-slate-50 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Total honorarios</p>
+              <p className="text-2xl font-bold text-slate-800">{clp(totalItems)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Por cuota</p>
+              <p className="text-lg font-semibold text-slate-700">
+                {form.numero_cuotas} × {clp(montoCuota)}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Campo label="Número de cuotas">
               <input name="numero_cuotas" type="number" min="1" max="60"
                 value={form.numero_cuotas} onChange={set} className="input" />
-            </Campo>
-            <Campo label="Monto por cuota (CLP)">
-              <input name="monto_cuota" type="number" min="0" step="1000"
-                value={form.monto_cuota} onChange={set} className="input" />
             </Campo>
             <Campo label="Fecha primera cuota">
               <input name="fecha_primera_cuota" type="date"
                 value={form.fecha_primera_cuota} onChange={set} className="input" />
             </Campo>
           </div>
-          {form.honorarios_total > 0 && form.numero_cuotas > 0 && (
-            <p className="text-xs text-slate-500">
-              Resumen: {form.numero_cuotas} cuota(s) de {clp(form.monto_cuota)} = {clp(Number(form.monto_cuota) * Number(form.numero_cuotas))}
-            </p>
-          )}
         </div>
 
+        {/* Notas */}
         <div className="card">
           <Campo label="Notas internas">
             <textarea name="notas" value={form.notas} onChange={set} rows={3}
@@ -254,9 +401,7 @@ export default function PresupuestoForm() {
         </div>
 
         <div className="flex items-center justify-between gap-3 pb-6 flex-wrap">
-          <Link to="/presupuestos" className="btn-secondary">
-            Cancelar
-          </Link>
+          <Link to="/presupuestos" className="btn-secondary">Cancelar</Link>
           <div className="flex gap-3">
             <button
               type="button"
