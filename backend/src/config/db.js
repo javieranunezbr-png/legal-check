@@ -1,11 +1,14 @@
 const { Pool } = require('pg');
 const dns = require('dns');
 
-// Railway resuelve postgres.railway.internal solo por IPv6.
-// Sin esto, Node reordena a IPv4 y el handshake se cae.
 dns.setDefaultResultOrder('verbatim');
 
 const esProduccion = process.env.NODE_ENV === 'production';
+
+// DEBUG: imprimir qué URL se está usando (sin exponer password)
+const urlDebug = (process.env.DATABASE_URL || '').replace(/:([^:@]+)@/, ':***@');
+console.log('[DB] DATABASE_URL:', urlDebug || '(no definida)');
+console.log('[DB] PGHOST:', process.env.PGHOST || '(no definida)');
 
 // Soporta tanto DATABASE_URL (una conexión string) como variables individuales PG*
 // que Railway proporciona automáticamente.

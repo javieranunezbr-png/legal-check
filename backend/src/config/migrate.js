@@ -21,7 +21,8 @@ async function run() {
         console.error(`Imposible conectar a Postgres después de ${MAX_INTENTOS} intentos:`, err.message);
         process.exit(1);
       }
-      console.log(`Intento ${intentos} falló, esperando 2s...`);
+      console.log(`Intento ${intentos} falló: ${err.code || err.name} - ${err.message}`);
+      if (err.address) console.log(`  → dirección: ${err.address}:${err.port}`);
       await new Promise(r => setTimeout(r, 2000));
     }
   }
