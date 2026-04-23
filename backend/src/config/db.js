@@ -1,4 +1,9 @@
 const { Pool } = require('pg');
+const dns = require('dns');
+
+// Railway resuelve *.railway.internal solo por IPv6. Evitamos que Node
+// reordene a IPv4 y rompa el handshake.
+dns.setDefaultResultOrder('verbatim');
 
 const esProduccion = process.env.NODE_ENV === 'production';
 
@@ -7,15 +12,17 @@ if (esProduccion && !process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-// Railway interno (railway.internal) no usa SSL; URLs públicas sí lo requieren
-const sslConfig = process.env.DATABASE_URL?.includes('railway.internal')
-  ? false
-  : { rejectUnauthorized: false }
+const url = process.env.DATABASE_URL || '';
+const esInterno = url.includes('railway.internal');
+
+// Interno Railway: sin SSL. Proxy público/otros hosts: SSL con cert relajado.
+const sslConfig = esInterno ? false : { rejectUnauthorized: false };
 
 const pool = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: sslConfig,
+      connectionTimeoutMillis: 10000,
     })
   : new Pool({
       host:     process.env.DB_HOST,
