@@ -12,11 +12,14 @@ if (esProduccion && !process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-// Railway Postgres requiere SSL incluso en la red interna.
+// SSL opcional: se activa solo si PGSSL=true. Railway Postgres interno
+// no lo soporta; la URL pública tampoco lo requiere en la práctica.
+const useSsl = process.env.PGSSL === 'true';
+
 const pool = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
       connectionTimeoutMillis: 10000,
     })
   : new Pool({
