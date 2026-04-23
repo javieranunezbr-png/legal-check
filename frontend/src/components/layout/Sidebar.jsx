@@ -61,9 +61,9 @@ export default function Sidebar() {
       <div className="px-6 py-6 border-b border-white/10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-primary font-bold text-sm">LC</span>
+            <span className="text-primary font-bold text-sm">LK</span>
           </div>
-          <span className="text-white font-semibold text-lg tracking-tight">Legal Check</span>
+          <span className="text-white font-semibold text-lg tracking-tight">Law Kit</span>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export default function Sidebar() {
 
       {/* Versión */}
       <div className="px-6 py-4 border-t border-white/10">
-        <p className="text-slate-400 text-xs">Legal Check v1.0</p>
+        <p className="text-slate-400 text-xs">Law Kit v1.0</p>
       </div>
     </aside>
   )

@@ -44,10 +44,10 @@ export default function Login() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
             style={{ backgroundColor: '#1e3a5f' }}>
-            <span className="text-white font-bold text-2xl">LC</span>
+            <span className="text-white font-bold text-2xl">LK</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Legal Check</h1>
-          <p className="text-slate-500 text-sm mt-1">Gestión de estudios jurídicos</p>
+          <h1 className="text-2xl font-bold text-slate-800">Law Kit</h1>
+          <p className="text-slate-500 text-sm mt-1">Gestión para estudios jurídicos</p>
         </div>
 
         {/* Card */}
@@ -121,7 +121,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} Legal Check — Chile
+          © {new Date().getFullYear()} Law Kit — Chile
         </p>
       </div>
     </div>
