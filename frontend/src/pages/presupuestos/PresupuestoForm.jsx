@@ -4,6 +4,7 @@ import api from '../../services/api'
 import { useApi } from '../../hooks/useApi'
 import AlertaBanner from '../../components/ui/AlertaBanner'
 import Spinner from '../../components/ui/Spinner'
+import EnvioPresupuesto from './EnvioPresupuesto'
 
 const MATERIAS = [
   'Familia', 'Civil', 'Laboral', 'Penal', 'Comercial',
@@ -197,24 +198,13 @@ export default function PresupuestoForm() {
       {error && <AlertaBanner mensaje={error} onClose={() => setError('')} />}
 
       {linkPublico && (
-        <div className="card bg-blue-50 border-blue-100">
-          <p className="text-xs font-semibold text-blue-900 uppercase tracking-wide mb-2">
-            Link para el prospecto
-          </p>
-          <div className="flex gap-2 items-center">
-            <input readOnly value={linkPublico} className="input flex-1 text-xs font-mono" />
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(linkPublico)
-                alert('Link copiado')
-              }}
-              className="btn-primary text-sm whitespace-nowrap"
-            >
-              Copiar
-            </button>
-          </div>
-        </div>
+        <EnvioPresupuesto
+          presupuestoId={id}
+          link={linkPublico}
+          nombreProspecto={form.nombre_prospecto}
+          correoProspecto={form.correo}
+          telefonoProspecto={form.telefono}
+        />
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">

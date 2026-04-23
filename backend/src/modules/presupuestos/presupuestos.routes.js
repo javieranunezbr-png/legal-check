@@ -9,6 +9,9 @@ router.patch('/:token/responder',     ctrl.responder);
 // Rutas privadas
 router.use(verificarToken);
 
+router.post('/:id/enviar-correo', ctrl.enviarCorreo);
+router.post('/:id/marcar-enviado', ctrl.marcarEnviado);
+
 router.get('/',          ctrl.listar);
 router.get('/:id',       ctrl.obtener);
 router.post('/',         ctrl.crear);
