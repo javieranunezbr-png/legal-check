@@ -7,10 +7,15 @@ if (esProduccion && !process.env.DATABASE_URL) {
   process.exit(1);
 }
 
+// Railway interno (railway.internal) no usa SSL; URLs públicas sí lo requieren
+const sslConfig = process.env.DATABASE_URL?.includes('railway.internal')
+  ? false
+  : { rejectUnauthorized: false }
+
 const pool = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: sslConfig,
     })
   : new Pool({
       host:     process.env.DB_HOST,

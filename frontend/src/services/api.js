@@ -12,11 +12,11 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Redirige al login si el token expiró
+// Redirige al login si el token expiró (no aplica en modo demo)
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && localStorage.getItem('demo_mode') !== 'true') {
       localStorage.removeItem('token')
       localStorage.removeItem('usuario')
       window.location.href = '/login'
