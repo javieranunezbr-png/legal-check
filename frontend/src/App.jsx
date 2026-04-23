@@ -13,12 +13,16 @@ import AcuerdosLista   from './pages/cobros/AcuerdosLista'
 import AcuerdoForm     from './pages/cobros/AcuerdoForm'
 import AcuerdoDetalle  from './pages/cobros/AcuerdoDetalle'
 import UsuariosAdmin   from './pages/admin/UsuariosAdmin'
+import PresupuestosLista  from './pages/presupuestos/PresupuestosLista'
+import PresupuestoForm    from './pages/presupuestos/PresupuestoForm'
+import PresupuestoPublico from './pages/presupuestos/PresupuestoPublico'
 
 export default function App() {
   return (
     <Routes>
-      {/* Pública */}
+      {/* Públicas */}
       <Route path="/login" element={<Login />} />
+      <Route path="/presupuesto/:token" element={<PresupuestoPublico />} />
 
       {/* Privadas */}
       <Route element={<PrivateRoute />}>
@@ -37,6 +41,11 @@ export default function App() {
           <Route path="/causas"              element={<CausasLista />} />
           <Route path="/causas/nueva"        element={<CausaForm />} />
           <Route path="/causas/:id/editar"   element={<CausaForm />} />
+
+          {/* Presupuestos */}
+          <Route path="/presupuestos"             element={<PresupuestosLista />} />
+          <Route path="/presupuestos/nuevo"       element={<PresupuestoForm />} />
+          <Route path="/presupuestos/:id/editar"  element={<PresupuestoForm />} />
 
           {/* Cobros */}
           <Route path="/cobros"                    element={<CobrosResumen />} />

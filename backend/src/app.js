@@ -8,7 +8,8 @@ const clientesRoutes  = require('./modules/clientes/clientes.routes');
 const causasRoutes    = require('./modules/causas/causas.routes');
 const acuerdosRoutes  = require('./modules/acuerdos/acuerdos.routes');
 const cuotasRoutes    = require('./modules/cuotas/cuotas.routes');
-const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
+const dashboardRoutes    = require('./modules/dashboard/dashboard.routes');
+const presupuestosRoutes = require('./modules/presupuestos/presupuestos.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -23,7 +24,8 @@ app.use('/api/clientes',  clientesRoutes);
 app.use('/api/causas',    causasRoutes);
 app.use('/api/acuerdos',  acuerdosRoutes);
 app.use('/api/cuotas',    cuotasRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard',    dashboardRoutes);
+app.use('/api/presupuestos', presupuestosRoutes);
 
 // Health check
 app.get('/api/health', (_, res) => res.json({ estado: 'OK' }));
