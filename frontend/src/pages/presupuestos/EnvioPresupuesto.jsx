@@ -7,15 +7,14 @@ const mensajeCorreoDefault = (nombre) =>
   `Hola ${nombre || ''}, te enviamos el presupuesto por nuestros servicios legales. Puedes revisarlo y aceptarlo en este link: [link]. Quedamos atentos a cualquier consulta.`
 
 const mensajeWhatsappDefault = (nombre, link) =>
-  `Hola ${nombre || ''}, te envío el presupuesto por nuestros servicios legales. Puedes revisarlo aquí: ${link}. Cualquier consulta estoy disponible.`
+  `Hola ${nombre || ''}, te envío el presupuesto por nuestros servicios legales. Puedes revisarlo aquí: ${link || ''}. Cualquier consulta estoy disponible.`
 
-// Quita todo menos dígitos; si no empieza con 56 (Chile), lo agrega
+// Quita todo menos dígitos; si es móvil chileno (9 dígitos empezando en 9), antepone 56
 function telefonoParaWhatsapp(tel) {
   if (!tel) return ''
   const digitos = String(tel).replace(/\D/g, '')
   if (!digitos) return ''
   if (digitos.startsWith('56')) return digitos
-  // Si empieza con 9 y tiene 9 dígitos, es móvil chileno → anteponer 56
   if (digitos.length === 9 && digitos.startsWith('9')) return '56' + digitos
   return digitos
 }
@@ -39,35 +38,79 @@ function Modal({ titulo, children, onClose }) {
 }
 
 export default function EnvioPresupuesto({
-  presupuestoId, link, nombreProspecto, correoProspecto, telefonoProspecto,
+  presupuestoId, link, nombreProspecto, correoProspecto, telefonoProspecto, ensureSaved,
 }) {
-  const [modal, setModal] = useState(null) // 'correo' | 'whatsapp' | null
+  const [modal, setModal]     = useState(null) // 'correo' | 'whatsapp' | null
+  const [preparando, setPreparando] = useState(null) // 'correo' | 'whatsapp' | 'copiar' | null
+  const [errorGlobal, setErrorGlobal] = useState('')
 
-  // Estado para correo
+  // Estado correo
   const [asunto, setAsunto]             = useState(asuntoDefault)
-  const [mensajeCorreo, setMensajeCorreo] = useState(mensajeCorreoDefault(nombreProspecto))
-  const [destinatario, setDestinatario] = useState(correoProspecto || '')
+  const [mensajeCorreo, setMensajeCorreo] = useState('')
+  const [destinatario, setDestinatario] = useState('')
+  const [linkActual, setLinkActual]     = useState(link)
+  const [idGuardado, setIdGuardado]     = useState(presupuestoId)
   const [enviandoCorreo, setEnviandoCorreo] = useState(false)
   const [errorCorreo, setErrorCorreo]   = useState('')
   const [okCorreo, setOkCorreo]         = useState('')
 
-  // Estado para whatsapp
-  const [mensajeWpp, setMensajeWpp] = useState(mensajeWhatsappDefault(nombreProspecto, link))
-  const [telefonoWpp, setTelefonoWpp] = useState(telefonoProspecto || '')
+  // Estado whatsapp
+  const [mensajeWpp, setMensajeWpp]     = useState('')
+  const [telefonoWpp, setTelefonoWpp]   = useState('')
 
-  const abrirCorreo = () => {
-    setAsunto(asuntoDefault)
-    setMensajeCorreo(mensajeCorreoDefault(nombreProspecto))
-    setDestinatario(correoProspecto || '')
-    setErrorCorreo('')
-    setOkCorreo('')
-    setModal('correo')
+  /**
+   * Garantiza que el presupuesto esté guardado y retorna { id, link }.
+   * Si no estaba guardado, llama a ensureSaved() (del padre) que lo crea/actualiza.
+   */
+  const prepararEnvio = async (tipo) => {
+    setErrorGlobal('')
+    setPreparando(tipo)
+    try {
+      let idFinal = presupuestoId
+      let linkFinal = link
+      if (ensureSaved) {
+        const { id, token } = await ensureSaved()
+        idFinal = id
+        linkFinal = `${window.location.origin}/presupuesto/${token}`
+      }
+      setIdGuardado(idFinal)
+      setLinkActual(linkFinal)
+      return { id: idFinal, link: linkFinal }
+    } catch (err) {
+      setErrorGlobal(err.response?.data?.mensaje || err.message || 'Error al guardar el presupuesto')
+      throw err
+    } finally {
+      setPreparando(null)
+    }
   }
 
-  const abrirWhatsapp = () => {
-    setMensajeWpp(mensajeWhatsappDefault(nombreProspecto, link))
-    setTelefonoWpp(telefonoProspecto || '')
-    setModal('whatsapp')
+  const handleCopiar = async () => {
+    try {
+      const { link: l } = await prepararEnvio('copiar')
+      await navigator.clipboard.writeText(l)
+      alert('Link copiado:\n' + l)
+    } catch { /* error ya seteado */ }
+  }
+
+  const handleAbrirCorreo = async () => {
+    try {
+      await prepararEnvio('correo')
+      setAsunto(asuntoDefault)
+      setMensajeCorreo(mensajeCorreoDefault(nombreProspecto))
+      setDestinatario(correoProspecto || '')
+      setErrorCorreo('')
+      setOkCorreo('')
+      setModal('correo')
+    } catch { /* error ya seteado */ }
+  }
+
+  const handleAbrirWhatsapp = async () => {
+    try {
+      const { link: l } = await prepararEnvio('whatsapp')
+      setMensajeWpp(mensajeWhatsappDefault(nombreProspecto, l))
+      setTelefonoWpp(telefonoProspecto || '')
+      setModal('whatsapp')
+    } catch { /* error ya seteado */ }
   }
 
   const enviarCorreo = async () => {
@@ -79,7 +122,7 @@ export default function EnvioPresupuesto({
     }
     setEnviandoCorreo(true)
     try {
-      await api.post(`/presupuestos/${presupuestoId}/enviar-correo`, {
+      await api.post(`/presupuestos/${idGuardado}/enviar-correo`, {
         asunto,
         mensaje: mensajeCorreo,
         destinatario: destinatario.trim(),
@@ -100,12 +143,13 @@ export default function EnvioPresupuesto({
       ? `https://wa.me/${tel}?text=${texto}`
       : `https://wa.me/?text=${texto}`
     window.open(url, '_blank')
-    // Marca como enviado si estaba en borrador
     try {
-      await api.post(`/presupuestos/${presupuestoId}/marcar-enviado`)
+      await api.post(`/presupuestos/${idGuardado}/marcar-enviado`)
     } catch { /* no bloquea */ }
     setModal(null)
   }
+
+  const ocupado = preparando !== null
 
   return (
     <div className="card bg-blue-50 border-blue-200 space-y-4">
@@ -114,45 +158,55 @@ export default function EnvioPresupuesto({
           📤 Enviar presupuesto al prospecto
         </p>
         <p className="text-xs text-blue-800 mb-3">
-          Elige cómo quieres enviarle el link. Puedes editar el mensaje antes.
+          Las acciones guardan automáticamente los cambios del formulario antes de enviar.
         </p>
 
-        {/* Botones prominentes de envío */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {errorGlobal && (
+          <div className="p-2.5 mb-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg">
+            {errorGlobal}
+          </div>
+        )}
+
+        {/* Botones de envío (3 opciones) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button
             type="button"
-            onClick={abrirCorreo}
-            className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg bg-[#1e3a5f] text-white text-sm font-semibold hover:bg-[#16314f] shadow-sm"
+            onClick={handleCopiar}
+            disabled={ocupado}
+            className="flex items-center justify-center gap-2 py-3 px-3 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60"
           >
-            <span className="text-lg">📧</span>
-            <span>Enviar por correo</span>
+            <span>🔗</span>
+            <span>{preparando === 'copiar' ? 'Guardando...' : 'Copiar link'}</span>
           </button>
           <button
             type="button"
-            onClick={abrirWhatsapp}
-            className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] shadow-sm"
+            onClick={handleAbrirCorreo}
+            disabled={ocupado}
+            className="flex items-center justify-center gap-2 py-3 px-3 rounded-lg bg-[#1e3a5f] text-white text-sm font-semibold hover:bg-[#16314f] disabled:opacity-60"
           >
-            <span className="text-lg">💬</span>
-            <span>Enviar por WhatsApp</span>
+            <span>📧</span>
+            <span>{preparando === 'correo' ? 'Guardando...' : 'Enviar por correo'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleAbrirWhatsapp}
+            disabled={ocupado}
+            className="flex items-center justify-center gap-2 py-3 px-3 rounded-lg bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] disabled:opacity-60"
+          >
+            <span>💬</span>
+            <span>{preparando === 'whatsapp' ? 'Guardando...' : 'Enviar por WhatsApp'}</span>
           </button>
         </div>
       </div>
 
-      <div className="pt-3 border-t border-blue-200">
-        <p className="text-xs font-medium text-blue-900 mb-1.5">
-          O copia el link manualmente:
-        </p>
-        <div className="flex gap-2 items-center">
-          <input readOnly value={link} className="input flex-1 text-xs font-mono bg-white" />
-          <button
-            type="button"
-            onClick={() => { navigator.clipboard.writeText(link); alert('Link copiado') }}
-            className="btn-secondary text-sm whitespace-nowrap"
-          >
-            Copiar
-          </button>
+      {linkActual && (
+        <div className="pt-3 border-t border-blue-200">
+          <p className="text-xs font-medium text-blue-900 mb-1.5">Link del presupuesto:</p>
+          <p className="text-xs font-mono bg-white border border-slate-200 rounded-md px-2 py-1.5 break-all text-slate-600">
+            {linkActual}
+          </p>
         </div>
-      </div>
+      )}
 
       {/* Modal Correo */}
       {modal === 'correo' && (
@@ -190,7 +244,7 @@ export default function EnvioPresupuesto({
               />
             </div>
             <p className="text-xs text-slate-400">
-              El correo incluirá automáticamente un botón grande con el link al presupuesto.
+              El correo incluirá automáticamente un botón con el link al presupuesto.
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setModal(null)} className="btn-secondary">Cancelar</button>

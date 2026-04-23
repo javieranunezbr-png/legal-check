@@ -44,6 +44,7 @@ export default function PresupuestoForm() {
 
   const [form, setForm]           = useState({ ...VACIO, items: [itemVacio()] })
   const [token, setToken]         = useState('')
+  const [idActual, setIdActual]   = useState(id || null)
   const [loading, setLoading]     = useState(esEdicion)
   const [guardando, setGuardando] = useState(false)
   const [error, setError]         = useState('')
@@ -127,47 +128,81 @@ export default function PresupuestoForm() {
     return n > 0 ? Math.round(totalItems / n) : 0
   }, [totalItems, form.numero_cuotas])
 
-  // ---------- Submit ----------
+  // ---------- Submit / guardado ----------
 
+  /**
+   * Guarda el presupuesto (crea o actualiza) sin navegar.
+   * Retorna { id, token } del presupuesto guardado.
+   */
+  const guardarPresupuesto = async (nuevoEstado) => {
+    if (!form.nombre_prospecto?.trim()) {
+      throw new Error('Ingresa el nombre del prospecto antes de continuar')
+    }
+
+    const itemsLimpios = form.items
+      .filter(it => it.nombre && it.nombre.trim())
+      .map(it => ({
+        nombre: it.nombre.trim(),
+        precio: Number(it.precio) || 0,
+        detalle: it.detalle || null,
+        gestion_id: it.gestion_id || null,
+      }))
+
+    const payload = {
+      ...form,
+      estado: nuevoEstado || form.estado || 'borrador',
+      honorarios_total: totalItems,
+      numero_cuotas: Number(form.numero_cuotas) || 1,
+      monto_cuota: montoCuota,
+      fecha_primera_cuota: form.fecha_primera_cuota || null,
+      items: itemsLimpios,
+    }
+
+    if (idActual) {
+      const { data } = await api.put(`/presupuestos/${idActual}`, payload)
+      refetchGestiones()
+      setToken(data.token_unico)
+      return { id: idActual, token: data.token_unico }
+    } else {
+      const { data } = await api.post('/presupuestos', payload)
+      refetchGestiones()
+      setIdActual(data.id)
+      setToken(data.token_unico)
+      // Actualiza URL sin recargar para que reload mantenga contexto
+      window.history.replaceState(null, '', `/presupuestos/${data.id}/editar`)
+      return { id: data.id, token: data.token_unico }
+    }
+  }
+
+  /**
+   * Handler del botón "Guardar borrador" / "Crear y enviar" del pie del formulario.
+   */
   const handleSubmit = async (e, nuevoEstado) => {
     e.preventDefault()
     setGuardando(true)
     setError('')
     try {
-      const itemsLimpios = form.items
-        .filter(it => it.nombre && it.nombre.trim())
-        .map(it => ({
-          nombre: it.nombre.trim(),
-          precio: Number(it.precio) || 0,
-          detalle: it.detalle || null,
-          gestion_id: it.gestion_id || null,
-        }))
-
-      const payload = {
-        ...form,
-        estado: nuevoEstado || form.estado,
-        honorarios_total: totalItems,
-        numero_cuotas: Number(form.numero_cuotas) || 1,
-        monto_cuota: montoCuota,
-        fecha_primera_cuota: form.fecha_primera_cuota || null,
-        items: itemsLimpios,
-      }
-
-      if (esEdicion) {
-        await api.put(`/presupuestos/${id}`, payload)
-      } else {
-        const { data } = await api.post('/presupuestos', payload)
-        refetchGestiones()
-        navigate(`/presupuestos/${data.id}/editar`)
-        return
-      }
-      refetchGestiones()
+      await guardarPresupuesto(nuevoEstado)
       navigate('/presupuestos')
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al guardar el presupuesto')
+      setError(err.response?.data?.mensaje || err.message || 'Error al guardar el presupuesto')
     } finally {
       setGuardando(false)
     }
+  }
+
+  /**
+   * Asegura que exista un presupuesto guardado antes de enviar/copiar.
+   * Si no existe, lo guarda como borrador automáticamente.
+   * Usado por EnvioPresupuesto.
+   */
+  const ensureSaved = async () => {
+    if (idActual && token) {
+      // Ya existe. Guardamos cambios pendientes antes de enviar para que el link tenga datos actualizados.
+      await guardarPresupuesto(form.estado || 'borrador')
+      return { id: idActual, token }
+    }
+    return guardarPresupuesto('borrador')
   }
 
   const linkPublico = useMemo(() => {
@@ -197,15 +232,14 @@ export default function PresupuestoForm() {
 
       {error && <AlertaBanner mensaje={error} onClose={() => setError('')} />}
 
-      {linkPublico && (
-        <EnvioPresupuesto
-          presupuestoId={id}
-          link={linkPublico}
-          nombreProspecto={form.nombre_prospecto}
-          correoProspecto={form.correo}
-          telefonoProspecto={form.telefono}
-        />
-      )}
+      <EnvioPresupuesto
+        presupuestoId={idActual}
+        link={linkPublico}
+        nombreProspecto={form.nombre_prospecto}
+        correoProspecto={form.correo}
+        telefonoProspecto={form.telefono}
+        ensureSaved={ensureSaved}
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
