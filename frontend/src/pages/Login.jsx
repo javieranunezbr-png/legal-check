@@ -6,9 +6,11 @@ export default function Login() {
   const { login } = useAuth()
   const navigate  = useNavigate()
 
-  const [form, setForm]     = useState({ email: '', password: '' })
-  const [error, setError]   = useState('')
+  const [form, setForm]       = useState({ email: '', password: '' })
+  const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
+
+  const esDesarrollo = import.meta.env.DEV
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -24,6 +26,19 @@ export default function Login() {
       navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al iniciar sesión')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDemo = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      await login('admin@legalcheck.cl', 'Admin1234!')
+      navigate('/dashboard')
+    } catch {
+      setError('Demo no disponible — ejecuta el seed: node seeds/seed_admin.js')
     } finally {
       setLoading(false)
     }
@@ -94,6 +109,23 @@ export default function Login() {
               {loading ? 'Ingresando...' : 'Ingresar'}
             </button>
           </form>
+
+          {esDesarrollo && (
+            <>
+              <div className="flex items-center gap-3 my-5">
+                <div className="flex-1 h-px bg-slate-200" />
+                <span className="text-xs text-slate-400 font-medium">solo desarrollo</span>
+                <div className="flex-1 h-px bg-slate-200" />
+              </div>
+              <button
+                onClick={handleDemo}
+                disabled={loading}
+                className="w-full py-2.5 rounded-lg border-2 border-dashed border-slate-300 text-sm font-medium text-slate-500 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+              >
+                ⚡ Ver demo (admin@legalcheck.cl)
+              </button>
+            </>
+          )}
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">

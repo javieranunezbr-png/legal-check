@@ -1,5 +1,12 @@
 const { Pool } = require('pg');
 
+const esProduccion = process.env.NODE_ENV === 'production';
+
+if (esProduccion && !process.env.DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL no está definida. Configúrala en Railway → Variables.');
+  process.exit(1);
+}
+
 const pool = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
