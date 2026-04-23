@@ -1,34 +1,30 @@
 const { Pool } = require('pg');
-const dns = require('dns');
-
-// Railway resuelve *.railway.internal solo por IPv6. Evitamos que Node
-// reordene a IPv4 y rompa el handshake.
-dns.setDefaultResultOrder('verbatim');
 
 const esProduccion = process.env.NODE_ENV === 'production';
 
-if (esProduccion && !process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL no está definida. Configúrala en Railway → Variables.');
+// Soporta tanto DATABASE_URL (una conexión string) como variables individuales PG*
+// que Railway proporciona automáticamente.
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: false,
+      connectionTimeoutMillis: 10000,
+    }
+  : {
+      host:     process.env.PGHOST || process.env.DB_HOST,
+      port:     parseInt(process.env.PGPORT || process.env.DB_PORT || '5432'),
+      database: process.env.PGDATABASE || process.env.DB_NAME,
+      user:     process.env.PGUSER || process.env.DB_USER,
+      password: process.env.POSTGRES_PASSWORD || process.env.DB_PASSWORD,
+      connectionTimeoutMillis: 10000,
+    };
+
+if (esProduccion && !poolConfig.host && !poolConfig.connectionString) {
+  console.error('ERROR: No se encontraron credenciales de base de datos (DATABASE_URL o PGHOST)');
   process.exit(1);
 }
 
-// SSL opcional: se activa solo si PGSSL=true. Railway Postgres interno
-// no lo soporta; la URL pública tampoco lo requiere en la práctica.
-const useSsl = process.env.PGSSL === 'true';
-
-const pool = process.env.DATABASE_URL
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: useSsl ? { rejectUnauthorized: false } : false,
-      connectionTimeoutMillis: 10000,
-    })
-  : new Pool({
-      host:     process.env.DB_HOST,
-      port:     process.env.DB_PORT,
-      database: process.env.DB_NAME,
-      user:     process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-    });
+const pool = new Pool(poolConfig);
 
 pool.on('error', (err) => {
   console.error('Error inesperado en cliente PostgreSQL:', err);
