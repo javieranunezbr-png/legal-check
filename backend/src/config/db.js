@@ -15,7 +15,7 @@ console.log('[DB] PGHOST:', process.env.PGHOST || '(no definida)');
 const poolConfig = process.env.DATABASE_URL
   ? {
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: false,
       connectionTimeoutMillis: 10000,
     }
   : {
