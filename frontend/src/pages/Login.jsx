@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Login() {
-  const { login } = useAuth()
+  const { login, loginDemo } = useAuth()
   const navigate  = useNavigate()
 
   const [form, setForm]       = useState({ email: '', password: '' })
@@ -31,17 +31,9 @@ export default function Login() {
     }
   }
 
-  const handleDemo = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      await login('admin@legalcheck.cl', 'Admin1234!')
-      navigate('/dashboard')
-    } catch {
-      setError('Demo no disponible — ejecuta el seed: node seeds/seed_admin.js')
-    } finally {
-      setLoading(false)
-    }
+  const handleDemo = () => {
+    loginDemo()
+    navigate('/dashboard')
   }
 
   return (
