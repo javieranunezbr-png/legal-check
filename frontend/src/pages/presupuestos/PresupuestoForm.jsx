@@ -47,8 +47,6 @@ export default function PresupuestoForm() {
   const [idActual, setIdActual]   = useState(id || null)
   const [loading, setLoading]     = useState(esEdicion)
   const [error, setError]         = useState('')
-  const [primerPago, setPrimerPago]   = useState(null)
-  const [portalToken, setPortalToken] = useState(null)
 
   useEffect(() => {
     if (!esEdicion) return
@@ -70,8 +68,6 @@ export default function PresupuestoForm() {
             : [itemVacio()],
         })
         setToken(d.token_unico)
-        setPrimerPago(d.primer_pago_recibido_en || null)
-        setPortalToken(d.portal_token || null)
       })
       .catch(() => setError('No se pudo cargar el presupuesto'))
       .finally(() => setLoading(false))
@@ -413,10 +409,6 @@ export default function PresupuestoForm() {
         nombreProspecto={form.nombre_prospecto}
         correoProspecto={form.correo}
         telefonoProspecto={form.telefono}
-        estado={form.estado}
-        primerPagoRecibidoEn={primerPago}
-        portalToken={portalToken}
-        onPrimerPagoMarcado={(pt) => { setPrimerPago(new Date().toISOString()); setPortalToken(pt) }}
         ensureSaved={ensureSaved}
         onGuardarBorrador={handleGuardarBorrador}
         permiteEliminar={Boolean(idActual)}

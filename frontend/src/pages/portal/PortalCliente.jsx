@@ -2,12 +2,58 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../../services/api'
 
-const CAMPOS_INICIALES = {
-  rut: '', nombre: '', apellidos: '',
-  email: '', telefono: '', direccion: '',
-  tipo: 'persona',
-  estado_civil: '', ocupacion: '', nacionalidad: 'Chilena', genero: '',
-  nombre_conyuge: '', apellidos_conyuge: '', rut_conyuge: '', direccion_conyuge: '',
+const ESTADO_CIVIL = [
+  ['', 'Selecciona...'],
+  ['soltero', 'Soltero/a'],
+  ['casado', 'Casado/a'],
+  ['divorciado', 'Divorciado/a'],
+  ['viudo', 'Viudo/a'],
+  ['conviviente', 'Conviviente civil'],
+]
+
+const GENERO = [
+  ['', 'Selecciona...'],
+  ['masculino', 'Masculino'],
+  ['femenino', 'Femenino'],
+  ['otro', 'Otro'],
+]
+
+const COMO_NOS_CONOCISTE = [
+  ['', 'Selecciona...'],
+  ['tiktok', 'TikTok'],
+  ['instagram', 'Instagram'],
+  ['recomendacion', 'Recomendación'],
+  ['otro', 'Otro'],
+]
+
+const REGIONES = [
+  '',
+  'Arica y Parinacota',
+  'Tarapacá',
+  'Antofagasta',
+  'Atacama',
+  'Coquimbo',
+  'Valparaíso',
+  'Metropolitana',
+  "O'Higgins",
+  'Maule',
+  'Ñuble',
+  'Biobío',
+  'La Araucanía',
+  'Los Ríos',
+  'Los Lagos',
+  'Aysén',
+  'Magallanes',
+]
+
+const VACIO = {
+  nombre: '', apellidos: '', rut: '',
+  email: '', telefono: '', ocupacion: '',
+  estado_civil: '', nacionalidad: 'Chilena', genero: '',
+  clave_unica: '',
+  direccion: '', comuna: '', region: '',
+  como_nos_conociste: '',
+  consideraciones: '',
 }
 
 export default function PortalCliente() {
@@ -15,38 +61,40 @@ export default function PortalCliente() {
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
   const [info, setInfo]       = useState(null)
-  const [form, setForm]       = useState(CAMPOS_INICIALES)
+  const [form, setForm]       = useState(VACIO)
   const [guardando, setGuardando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState('')
   const [listo, setListo]     = useState(false)
 
   useEffect(() => {
     api.get(`/portal/${token}`)
       .then(r => {
         setInfo(r.data)
-        if (r.data.portal_completado_en) setListo(true)
+        if (r.data.ingreso_completado) setListo(true)
         setForm(f => ({
           ...f,
-          nombre:   r.data.nombre_prospecto?.split(' ')[0] || '',
-          apellidos: r.data.nombre_prospecto?.split(' ').slice(1).join(' ') || '',
-          email:    r.data.correo   || '',
-          telefono: r.data.telefono || '',
+          nombre:    r.data.nombre    || '',
+          apellidos: r.data.apellidos || '',
+          email:     r.data.email     || '',
+          telefono:  r.data.telefono  || '',
         }))
       })
-      .catch(e => setError(e.response?.data?.mensaje || 'No se pudo cargar el portal'))
+      .catch(e => setError(e.response?.data?.mensaje || 'No pudimos cargar el portal'))
       .finally(() => setLoading(false))
   }, [token])
 
-  const actualizar = (campo) => (e) =>
+  const set = (campo) => (e) =>
     setForm(f => ({ ...f, [campo]: e.target.value }))
 
   const enviar = async (e) => {
     e.preventDefault()
+    setErrorEnvio('')
     setGuardando(true)
     try {
-      await api.post(`/portal/${token}/completar`, form)
+      await api.post(`/portal/${token}`, form)
       setListo(true)
     } catch (err) {
-      alert(err.response?.data?.mensaje || 'Error al enviar formulario')
+      setErrorEnvio(err.response?.data?.mensaje || 'Error al enviar formulario')
     } finally {
       setGuardando(false)
     }
@@ -56,91 +104,110 @@ export default function PortalCliente() {
 
   if (error) return (
     <Pantalla>
-      <div className="max-w-md bg-white rounded-2xl border border-slate-100 p-8 text-center shadow-sm">
-        <div className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>
-        <h1 className="text-lg font-semibold text-slate-800 mb-2">No encontrado</h1>
-        <p className="text-sm text-slate-500">{error}</p>
-      </div>
+      <Tarjeta>
+        <Encabezado />
+        <div className="p-8 text-center">
+          <div className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>
+          <h1 className="text-lg font-semibold text-slate-800 mb-2">Link no válido</h1>
+          <p className="text-sm text-slate-500">{error}</p>
+        </div>
+      </Tarjeta>
     </Pantalla>
   )
 
   if (listo) return (
     <Pantalla>
-      <div className="max-w-md bg-white rounded-2xl border border-slate-100 p-8 text-center shadow-sm">
-        <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
-        <h1 className="text-lg font-semibold text-slate-800 mb-2">¡Listo!</h1>
-        <p className="text-sm text-slate-500">
-          Hemos recibido tus datos. {info?.abogado_nombre ? `${info.abogado_nombre} se contactará contigo pronto.` : 'Te contactaremos pronto.'}
-        </p>
-      </div>
+      <Tarjeta>
+        <Encabezado />
+        <div className="p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
+          <h1 className="text-xl font-semibold text-slate-800 mb-2">¡Tus datos fueron recibidos. Bienvenido/a!</h1>
+          <p className="text-sm text-slate-500">
+            {info?.abogado_nombre
+              ? `${info.abogado_nombre} se contactará contigo pronto.`
+              : 'Te contactaremos pronto.'}
+          </p>
+        </div>
+      </Tarjeta>
     </Pantalla>
   )
 
   return (
     <Pantalla>
-      <div className="max-w-2xl w-full">
-        {/* Encabezado */}
-        <div className="bg-[#1e3a5f] rounded-t-2xl px-6 py-5 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-white text-[#1e3a5f] font-bold flex items-center justify-center">LK</div>
-            <div>
-              <p className="text-xs opacity-75">Law Kit</p>
-              <h1 className="font-semibold">Ingreso de cliente</h1>
-            </div>
-          </div>
-          <p className="text-sm opacity-90 mt-3">
-            Hola {info?.nombre_prospecto}, completa tus datos para que {info?.abogado_nombre || 'tu abogado'} pueda ingresarte formalmente como cliente.
-          </p>
-        </div>
+      <Tarjeta>
+        <Encabezado nombreCliente={info?.nombre} abogado={info?.abogado_nombre} />
+        <form onSubmit={enviar} className="p-6 sm:p-8 space-y-7" noValidate>
 
-        <form onSubmit={enviar} className="bg-white rounded-b-2xl border border-slate-100 shadow-sm p-6 space-y-6">
           <Seccion titulo="Datos personales">
             <Grid>
-              <Input label="RUT *" value={form.rut} onChange={actualizar('rut')} placeholder="12.345.678-9" required />
-              <Select label="Tipo" value={form.tipo} onChange={actualizar('tipo')}
-                      options={[['persona','Persona natural'],['empresa','Empresa']]} />
-              <Input label="Nombre *" value={form.nombre} onChange={actualizar('nombre')} required />
-              <Input label="Apellidos" value={form.apellidos} onChange={actualizar('apellidos')} />
-              <Input label="Correo" type="email" value={form.email} onChange={actualizar('email')} />
-              <Input label="Teléfono" value={form.telefono} onChange={actualizar('telefono')} />
+              <Input label="Nombres" value={form.nombre}    onChange={set('nombre')}    required />
+              <Input label="Apellidos" value={form.apellidos} onChange={set('apellidos')} required />
+              <Input label="RUT" value={form.rut} onChange={set('rut')} placeholder="12.345.678-9" required />
+              <Input label="Correo electrónico" type="email" value={form.email} onChange={set('email')} required />
+              <Input label="Teléfono" value={form.telefono} onChange={set('telefono')} placeholder="+56 9 1234 5678" required />
+              <Input label="Ocupación" value={form.ocupacion} onChange={set('ocupacion')} required />
+              <Select label="Estado civil" value={form.estado_civil} onChange={set('estado_civil')} options={ESTADO_CIVIL} required />
+              <Input label="Nacionalidad" value={form.nacionalidad} onChange={set('nacionalidad')} required />
+              <Select label="Género" value={form.genero} onChange={set('genero')} options={GENERO} required />
+              <Input
+                label="Clave única"
+                value={form.clave_unica}
+                onChange={set('clave_unica')}
+                hint="Solo tu abogado podrá verla. Es opcional."
+              />
             </Grid>
-            <Input label="Dirección" value={form.direccion} onChange={actualizar('direccion')} />
           </Seccion>
 
-          <Seccion titulo="Antecedentes">
+          <Seccion titulo="Dirección">
+            <Input label="Calle y número" value={form.direccion} onChange={set('direccion')} required />
             <Grid>
-              <Select label="Estado civil" value={form.estado_civil} onChange={actualizar('estado_civil')}
-                      options={[['',''],['soltero','Soltero/a'],['casado','Casado/a'],['conviviente','Conviviente civil'],['divorciado','Divorciado/a'],['viudo','Viudo/a']]} />
-              <Input label="Ocupación" value={form.ocupacion} onChange={actualizar('ocupacion')} />
-              <Input label="Nacionalidad" value={form.nacionalidad} onChange={actualizar('nacionalidad')} />
-              <Select label="Género" value={form.genero} onChange={actualizar('genero')}
-                      options={[['',''],['femenino','Femenino'],['masculino','Masculino'],['otro','Otro'],['prefiero_no_decir','Prefiero no decir']]} />
+              <Input label="Comuna" value={form.comuna} onChange={set('comuna')} required />
+              <Select
+                label="Región"
+                value={form.region}
+                onChange={set('region')}
+                options={REGIONES.map(r => [r, r || 'Selecciona...'])}
+                required
+              />
             </Grid>
           </Seccion>
 
-          {['casado','conviviente'].includes(form.estado_civil) && (
-            <Seccion titulo="Datos del cónyuge / conviviente">
-              <Grid>
-                <Input label="Nombre" value={form.nombre_conyuge} onChange={actualizar('nombre_conyuge')} />
-                <Input label="Apellidos" value={form.apellidos_conyuge} onChange={actualizar('apellidos_conyuge')} />
-                <Input label="RUT" value={form.rut_conyuge} onChange={actualizar('rut_conyuge')} />
-                <Input label="Dirección" value={form.direccion_conyuge} onChange={actualizar('direccion_conyuge')} />
-              </Grid>
-            </Seccion>
+          <Seccion titulo="Otros">
+            <Select
+              label="¿Cómo nos conociste?"
+              value={form.como_nos_conociste}
+              onChange={set('como_nos_conociste')}
+              options={COMO_NOS_CONOCISTE}
+              required
+            />
+            <Textarea
+              label="¿Alguna consideración importante?"
+              value={form.consideraciones}
+              onChange={set('consideraciones')}
+              placeholder="Escribe cualquier información que creas relevante (opcional)"
+              rows={4}
+            />
+          </Seccion>
+
+          {errorEnvio && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+              {errorEnvio}
+            </div>
           )}
 
           <button
             type="submit"
             disabled={guardando}
-            className="w-full bg-[#1e3a5f] hover:bg-[#16304d] text-white rounded-lg py-3 font-semibold text-sm disabled:opacity-50"
+            className="w-full bg-[#1e3a5f] hover:bg-[#16304d] text-white rounded-lg py-3 font-semibold text-sm disabled:opacity-50 transition-colors"
           >
-            {guardando ? 'Enviando...' : 'Enviar datos'}
+            {guardando ? 'Enviando...' : 'Enviar mis datos'}
           </button>
+
           <p className="text-xs text-slate-400 text-center">
-            Tus datos serán compartidos solo con {info?.abogado_nombre || 'tu abogado'} para la gestión de tu caso.
+            Tu información es privada y se compartirá únicamente con {info?.abogado_nombre || 'tu abogado'}.
           </p>
         </form>
-      </div>
+      </Tarjeta>
     </Pantalla>
   )
 }
@@ -153,10 +220,38 @@ function Pantalla({ children }) {
   )
 }
 
+function Tarjeta({ children }) {
+  return (
+    <div className="max-w-2xl w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      {children}
+    </div>
+  )
+}
+
+function Encabezado({ nombreCliente, abogado }) {
+  return (
+    <div className="bg-[#1e3a5f] px-6 sm:px-8 py-6 text-white">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-white text-[#1e3a5f] font-bold flex items-center justify-center">LK</div>
+        <div>
+          <p className="text-xs opacity-75">Law Kit</p>
+          <h1 className="font-semibold">Ingreso de cliente</h1>
+        </div>
+      </div>
+      {nombreCliente && (
+        <p className="text-sm opacity-90 mt-3">
+          Hola {nombreCliente}, completa los siguientes datos para activar tu ficha
+          {abogado ? ` con ${abogado}` : ''}.
+        </p>
+      )}
+    </div>
+  )
+}
+
 function Seccion({ titulo, children }) {
   return (
     <div className="space-y-3">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">{titulo}</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{titulo}</h2>
       {children}
     </div>
   )
@@ -166,28 +261,47 @@ function Grid({ children }) {
   return <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>
 }
 
-function Input({ label, ...props }) {
+function Input({ label, hint, required, ...props }) {
   return (
     <label className="block">
-      <span className="text-xs text-slate-500 mb-1 block">{label}</span>
+      <span className="text-xs text-slate-600 mb-1 block">
+        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+      </span>
       <input
         {...props}
+        required={required}
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
       />
+      {hint && <span className="text-[11px] text-slate-400 mt-1 block">{hint}</span>}
     </label>
   )
 }
 
-function Select({ label, options, ...props }) {
+function Select({ label, options, required, ...props }) {
   return (
     <label className="block">
-      <span className="text-xs text-slate-500 mb-1 block">{label}</span>
+      <span className="text-xs text-slate-600 mb-1 block">
+        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+      </span>
       <select
         {...props}
+        required={required}
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
       >
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
+    </label>
+  )
+}
+
+function Textarea({ label, ...props }) {
+  return (
+    <label className="block">
+      <span className="text-xs text-slate-600 mb-1 block">{label}</span>
+      <textarea
+        {...props}
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
+      />
     </label>
   )
 }

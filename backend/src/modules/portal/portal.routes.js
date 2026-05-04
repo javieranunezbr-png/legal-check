@@ -1,13 +1,8 @@
-const router             = require('express').Router();
-const ctrl               = require('./portal.controller');
-const { verificarToken } = require('../../middleware/auth');
+const router = require('express').Router();
+const ctrl   = require('./portal.controller');
 
-// Rutas públicas (sin auth) — el cliente completa el formulario
-router.get('/:token',           ctrl.obtenerPublico);
-router.post('/:token/completar', ctrl.completar);
-
-// Rutas privadas — el abogado marca primer pago de un presupuesto
-router.use(verificarToken);
-router.post('/presupuesto/:id/marcar-primer-pago', ctrl.marcarPrimerPago);
+// Rutas 100% públicas — el cliente completa su ficha desde el link del correo
+router.get('/:token',  ctrl.obtenerPublico);
+router.post('/:token', ctrl.completar);
 
 module.exports = router;

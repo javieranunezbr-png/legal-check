@@ -1,66 +1,62 @@
 const crypto = require('crypto');
 const pool   = require('../../config/db');
 
-/** Normaliza RUT chileno: elimina puntos, guiones y espacios, deja dígito verificador al final. */
+/** Normaliza RUT chileno: elimina puntos, guiones y espacios. */
 function normalizarRut(rut) {
   if (!rut) return '';
   return String(rut).replace(/[.\-\s]/g, '').toUpperCase();
 }
 
-/** Genera (si no existe) el portal_token del presupuesto y marca el primer pago. */
-async function marcarPrimerPago(presupuestoId, { rol, usuarioId }) {
-  const params = rol === 'admin' ? [presupuestoId] : [usuarioId, presupuestoId];
-  const filtro = rol === 'admin' ? '' : 'AND abogado_id = $1';
-  const pId    = rol === 'admin' ? '$1' : '$2';
+const CAMPOS_REQUERIDOS = [
+  'nombre','apellidos','rut','email','telefono','ocupacion',
+  'estado_civil','nacionalidad','genero',
+  'direccion','comuna','region',
+  'como_nos_conociste',
+];
 
-  // Cargar presupuesto con permiso
-  const { rows } = await pool.query(
-    `SELECT * FROM presupuestos WHERE id = ${pId} ${filtro}`,
-    params
-  );
-  const pres = rows[0];
-  if (!pres) return null;
+const ETIQUETAS = {
+  nombre: 'Nombres', apellidos: 'Apellidos', rut: 'RUT',
+  email: 'Correo electrónico', telefono: 'Teléfono', ocupacion: 'Ocupación',
+  estado_civil: 'Estado civil', nacionalidad: 'Nacionalidad', genero: 'Género',
+  direccion: 'Dirección', comuna: 'Comuna', region: 'Región',
+  como_nos_conociste: '¿Cómo nos conociste?',
+};
 
-  const token = pres.portal_token || crypto.randomBytes(24).toString('hex');
-
-  const { rows: act } = await pool.query(
-    `UPDATE presupuestos
-     SET primer_pago_recibido_en = COALESCE(primer_pago_recibido_en, NOW()),
-         portal_token            = $1
-     WHERE id = $2
-     RETURNING *`,
-    [token, presupuestoId]
-  );
-  return act[0];
-}
-
-/** Obtiene datos públicos del portal por su token. */
+/** Devuelve datos públicos del cliente por su token de ingreso. */
 async function obtenerPorToken(token) {
   const { rows } = await pool.query(
-    `SELECT p.id, p.nombre_prospecto, p.correo, p.telefono,
-            p.portal_completado_en, p.cliente_id,
+    `SELECT c.id, c.nombre, c.apellidos, c.email, c.telefono,
+            c.ingreso_completado,
             u.nombre AS abogado_nombre
-     FROM presupuestos p
-     LEFT JOIN usuarios u ON u.id = p.abogado_id
-     WHERE p.portal_token = $1`,
+     FROM clientes c
+     LEFT JOIN usuarios u ON u.id = c.abogado_id
+     WHERE c.token_ingreso = $1`,
     [token]
   );
   return rows[0] || null;
 }
 
 /**
- * Guarda los datos del cliente desde el formulario público.
- * - Valida RUT único (si existe cliente con ese RUT, lo vincula y actualiza).
- * - Crea cliente con estado='activo'.
- * - Vincula presupuesto.cliente_id + portal_completado_en.
+ * Completa la ficha del cliente desde el formulario público.
+ * Reglas:
+ *  - Todos los campos del spec son obligatorios (excepto clave_unica y consideraciones).
+ *  - Si el RUT enviado ya existe en otro cliente → "Ya tienes una ficha registrada con nosotros."
+ *  - Si este mismo cliente ya completó el ingreso → mismo mensaje (idempotencia + protección).
+ *  - Marca cliente.estado='activo' e ingreso_completado=true.
  */
 async function completarPortal(token, datos) {
   const rutNormalizado = normalizarRut(datos.rut);
-  if (!rutNormalizado) {
-    throw { status: 400, mensaje: 'El RUT es obligatorio' };
-  }
-  if (!datos.nombre || !datos.nombre.trim()) {
-    throw { status: 400, mensaje: 'El nombre es obligatorio' };
+
+  // Validación de campos obligatorios
+  const faltantes = CAMPOS_REQUERIDOS.filter(c => {
+    const v = c === 'rut' ? rutNormalizado : datos[c];
+    return !v || !String(v).trim();
+  });
+  if (faltantes.length) {
+    throw {
+      status: 400,
+      mensaje: 'Faltan campos obligatorios: ' + faltantes.map(c => ETIQUETAS[c] || c).join(', '),
+    };
   }
 
   const client = await pool.connect();
@@ -68,86 +64,79 @@ async function completarPortal(token, datos) {
     await client.query('BEGIN');
 
     const { rows } = await client.query(
-      `SELECT id, abogado_id, cliente_id, portal_completado_en
-       FROM presupuestos WHERE portal_token = $1 FOR UPDATE`,
+      `SELECT id, ingreso_completado FROM clientes
+       WHERE token_ingreso = $1 FOR UPDATE`,
       [token]
     );
-    const pres = rows[0];
-    if (!pres) {
+    const cliente = rows[0];
+    if (!cliente) {
       await client.query('ROLLBACK');
-      throw { status: 404, mensaje: 'Portal no encontrado' };
+      throw { status: 404, mensaje: 'Link no válido o expirado' };
     }
-    if (pres.portal_completado_en) {
+    if (cliente.ingreso_completado) {
       await client.query('ROLLBACK');
-      throw { status: 400, mensaje: 'Este formulario ya fue completado' };
+      throw { status: 409, mensaje: 'Ya tienes una ficha registrada con nosotros.' };
     }
 
-    // Busca cliente existente por RUT
-    const { rows: existentes } = await client.query(
-      `SELECT id FROM clientes WHERE rut = $1`,
-      [rutNormalizado]
+    // Verificar que el RUT no esté ya en otro cliente
+    const { rows: conflictos } = await client.query(
+      `SELECT id FROM clientes WHERE rut = $1 AND id <> $2`,
+      [rutNormalizado, cliente.id]
     );
-
-    const campos = {
-      rut:               rutNormalizado,
-      nombre:            datos.nombre?.trim(),
-      apellidos:         datos.apellidos || null,
-      email:             datos.email || null,
-      telefono:          datos.telefono || null,
-      direccion:         datos.direccion || null,
-      tipo:              datos.tipo || 'persona',
-      estado_civil:      datos.estado_civil || null,
-      ocupacion:         datos.ocupacion || null,
-      nacionalidad:      datos.nacionalidad || null,
-      genero:            datos.genero || null,
-      nombre_conyuge:    datos.nombre_conyuge || null,
-      apellidos_conyuge: datos.apellidos_conyuge || null,
-      rut_conyuge:       datos.rut_conyuge ? normalizarRut(datos.rut_conyuge) : null,
-      direccion_conyuge: datos.direccion_conyuge || null,
-    };
-
-    let clienteId;
-    if (existentes[0]) {
-      clienteId = existentes[0].id;
-      // Actualiza datos y reactiva
-      const sets = Object.keys(campos)
-        .map((k, i) => `${k} = COALESCE($${i + 1}, ${k})`)
-        .join(', ');
-      const vals = Object.values(campos);
-      await client.query(
-        `UPDATE clientes
-         SET ${sets}, estado = 'activo', abogado_id = COALESCE(abogado_id, $${vals.length + 1})
-         WHERE id = $${vals.length + 2}`,
-        [...vals, pres.abogado_id, clienteId]
-      );
-    } else {
-      const keys = Object.keys(campos);
-      const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-      const vals = Object.values(campos);
-      const { rows: creados } = await client.query(
-        `INSERT INTO clientes (${keys.join(', ')}, estado, abogado_id)
-         VALUES (${placeholders}, 'activo', $${vals.length + 1})
-         RETURNING id`,
-        [...vals, pres.abogado_id]
-      );
-      clienteId = creados[0].id;
+    if (conflictos[0]) {
+      await client.query('ROLLBACK');
+      throw { status: 409, mensaje: 'Ya tienes una ficha registrada con nosotros.' };
     }
 
     await client.query(
-      `UPDATE presupuestos
-       SET cliente_id = $1, portal_completado_en = NOW()
-       WHERE id = $2`,
-      [clienteId, pres.id]
+      `UPDATE clientes SET
+         nombre              = $1,
+         apellidos           = $2,
+         rut                 = $3,
+         email               = $4,
+         telefono            = $5,
+         ocupacion           = $6,
+         estado_civil        = $7,
+         nacionalidad        = $8,
+         genero              = $9,
+         clave_unica         = $10,
+         direccion           = $11,
+         comuna              = $12,
+         region              = $13,
+         canal_llegada       = $14,
+         consideraciones     = $15,
+         estado              = 'activo',
+         ingreso_completado  = TRUE,
+         ingreso_completado_en = NOW()
+       WHERE id = $16`,
+      [
+        datos.nombre.trim(),
+        datos.apellidos.trim(),
+        rutNormalizado,
+        datos.email.trim(),
+        datos.telefono.trim(),
+        datos.ocupacion.trim(),
+        datos.estado_civil,
+        datos.nacionalidad.trim(),
+        datos.genero,
+        datos.clave_unica || null,
+        datos.direccion.trim(),
+        datos.comuna.trim(),
+        datos.region,
+        datos.como_nos_conociste,
+        datos.consideraciones || null,
+        cliente.id,
+      ]
     );
 
     await client.query('COMMIT');
-    return { cliente_id: clienteId };
+    return { cliente_id: cliente.id };
   } catch (err) {
-    await client.query('ROLLBACK');
+    try { await client.query('ROLLBACK'); } catch {}
     throw err;
   } finally {
     client.release();
   }
 }
 
-module.exports = { marcarPrimerPago, obtenerPorToken, completarPortal };
+module.exports = { obtenerPorToken, completarPortal };
