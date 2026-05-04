@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../../services/api'
 
-const asuntoDefault = 'Presupuesto de servicios legales - Law Kit'
+const asuntoDefault = 'Presupuesto de servicios legales — lawkit'
 
 const mensajeCorreoDefault = (nombre) =>
   `Hola ${nombre || ''}, te enviamos el presupuesto por nuestros servicios legales. Puedes revisarlo y aceptarlo en este link: [link]. Quedamos atentos a cualquier consulta.`
@@ -254,7 +254,7 @@ export default function EnvioPresupuesto({
                   type="button"
                   onClick={handleAbrirCorreo}
                   disabled={ocupado}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#1e3a5f] text-white text-sm font-semibold hover:bg-[#16314f] disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-dark disabled:opacity-50"
                 >
                   <span>📧</span>
                   <span>{preparando === 'correo' ? '...' : 'Enviar por correo'}</span>

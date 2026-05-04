@@ -96,7 +96,7 @@ async function enviarCorreo(req, res) {
 
     await emailSvc.enviarPresupuesto({
       destinatario: correoDestino,
-      asunto: asunto || 'Presupuesto de servicios legales - Law Kit',
+      asunto: asunto || 'Presupuesto de servicios legales — lawkit',
       mensaje: mensaje || `Hola ${p.nombre_prospecto}, te enviamos el presupuesto por nuestros servicios legales. Puedes revisarlo y aceptarlo en este link: [link]. Quedamos atentos a cualquier consulta.`,
       link,
       nombreAbogado: p.abogado_nombre,

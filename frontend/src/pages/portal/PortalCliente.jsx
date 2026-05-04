@@ -195,7 +195,7 @@ export default function PortalCliente() {
           <button
             type="submit"
             disabled={guardando}
-            className="w-full bg-[#1e3a5f] hover:bg-[#16304d] text-white rounded-lg py-3 font-semibold text-sm disabled:opacity-50 transition-colors"
+            className="w-full bg-primary hover:bg-primary-dark text-white rounded-lg py-3 font-semibold text-sm disabled:opacity-50 transition-colors"
           >
             {guardando ? 'Enviando...' : 'Enviar mis datos'}
           </button>
@@ -229,13 +229,16 @@ function Tarjeta({ children }) {
 
 function Encabezado({ nombreCliente, abogado }) {
   return (
-    <div className="bg-[#1e3a5f] px-6 sm:px-8 py-6 text-white">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-white text-[#1e3a5f] font-bold flex items-center justify-center">LK</div>
-        <div>
-          <p className="text-xs opacity-75">Law Kit</p>
-          <h1 className="font-semibold">Ingreso de cliente</h1>
-        </div>
+    <div className="bg-carbon px-6 sm:px-8 py-6 text-white">
+      <div className="flex items-end justify-between gap-3">
+        <span className="inline-flex items-end leading-none font-semibold tracking-tight">
+          <span className="text-2xl text-white">lawkit</span>
+          <span
+            className="rounded-full bg-primary inline-block w-2 h-2 ml-1"
+            style={{ marginBottom: '0.15em' }}
+          />
+        </span>
+        <h1 className="text-sm opacity-80">Ingreso de cliente</h1>
       </div>
       {nombreCliente && (
         <p className="text-sm opacity-90 mt-3">
@@ -269,7 +272,7 @@ function Input({ label, hint, required, ...props }) {
       <input
         {...props}
         required={required}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
       />
       {hint && <span className="text-[11px] text-slate-400 mt-1 block">{hint}</span>}
     </label>
@@ -285,7 +288,7 @@ function Select({ label, options, required, ...props }) {
       <select
         {...props}
         required={required}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] disabled:bg-slate-50 disabled:text-slate-400"
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-slate-50 disabled:text-slate-400"
       >
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
@@ -299,7 +302,7 @@ function Textarea({ label, ...props }) {
       <span className="text-xs text-slate-600 mb-1 block">{label}</span>
       <textarea
         {...props}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
       />
     </label>
   )
@@ -316,7 +319,7 @@ function CampoClaveUnica({ value, onChange }) {
     <div className="border border-slate-200 rounded-xl bg-slate-50/60 p-4 mt-3">
       <div className="flex items-start gap-3">
         {/* Ícono candado */}
-        <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 text-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.105 0 2 .895 2 2v3a2 2 0 11-4 0v-3c0-1.105.895-2 2-2zm6-2V7a6 6 0 10-12 0v2H4v12h16V9h-2zm-10 0V7a4 4 0 118 0v2H8z" />
           </svg>
@@ -336,7 +339,7 @@ function CampoClaveUnica({ value, onChange }) {
               required
               autoComplete="off"
               placeholder="••••••••"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] bg-white"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
             />
             <button
               type="button"

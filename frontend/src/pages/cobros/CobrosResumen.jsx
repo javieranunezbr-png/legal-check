@@ -21,7 +21,7 @@ function BarraProgreso({ cobrado, total }) {
       <div className="h-1.5 bg-slate-100 rounded-full">
         <div
           className="h-1.5 rounded-full transition-all"
-          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#16a34a' : '#1e3a5f' }}
+          style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#16a34a' : '#8B5CF6' }}
         />
       </div>
     </div>

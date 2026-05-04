@@ -11,7 +11,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
+    <header className="h-16 bg-white border-b border-zinc-200 flex items-center justify-between px-6 shadow-sm">
       <div />
 
       <div className="flex items-center gap-4">
@@ -22,8 +22,7 @@ export default function Navbar() {
         </div>
 
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
-          style={{ backgroundColor: '#1e3a5f' }}>
+        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm bg-primary">
           {usuario?.nombre?.charAt(0).toUpperCase()}
         </div>
 

@@ -70,12 +70,14 @@ export default function PresupuestoPublico() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-3"
-            style={{ backgroundColor: '#1e3a5f' }}>
-            <span className="text-white font-bold text-xl">LK</span>
-          </div>
-          <h1 className="text-xl font-bold text-slate-800">Law Kit</h1>
-          <p className="text-slate-500 text-xs mt-1">Propuesta de servicios legales</p>
+          <span className="inline-flex items-end leading-none font-semibold tracking-tight">
+            <span className="text-3xl text-carbon">lawkit</span>
+            <span
+              className="rounded-full bg-primary inline-block w-2.5 h-2.5 ml-1"
+              style={{ marginBottom: '0.15em' }}
+            />
+          </span>
+          <p className="text-muted text-xs mt-3">Propuesta de servicios legales</p>
         </div>
 
         {/* Respuesta recibida */}
@@ -217,7 +219,7 @@ export default function PresupuestoPublico() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} Law Kit — Chile
+          © {new Date().getFullYear()} lawkit — Chile
         </p>
       </div>
     </div>

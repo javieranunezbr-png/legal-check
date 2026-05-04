@@ -173,8 +173,7 @@ export default function UsuariosAdmin() {
                 <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-                        style={{ backgroundColor: '#1e3a5f' }}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 bg-primary">
                         {u.nombre.charAt(0).toUpperCase()}
                       </div>
                       <div>

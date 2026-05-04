@@ -139,7 +139,7 @@ export default function Dashboard() {
         <div className="w-full bg-slate-100 rounded-full h-2.5">
           <div
             className="h-2.5 rounded-full transition-all"
-            style={{ width: `${Math.min(porcentajeCobrado, 100)}%`, backgroundColor: '#1e3a5f' }}
+            style={{ width: `${Math.min(porcentajeCobrado, 100)}%`, backgroundColor: '#8B5CF6' }}
           />
         </div>
         <div className="flex justify-between mt-2 text-xs text-slate-400">

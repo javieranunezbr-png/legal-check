@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import Logo from '../components/ui/Logo'
 
 export default function Login() {
   const { login, loginDemo } = useAuth()
@@ -37,22 +38,18 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-bone flex items-center justify-center p-4">
       <div className="w-full max-w-md">
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-            style={{ backgroundColor: '#1e3a5f' }}>
-            <span className="text-white font-bold text-2xl">LK</span>
-          </div>
-          <h1 className="text-2xl font-bold text-slate-800">Law Kit</h1>
-          <p className="text-slate-500 text-sm mt-1">Gestión para estudios jurídicos</p>
+          <Logo size="xl" />
+          <p className="text-muted text-sm mt-3">Gestión para estudios jurídicos</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-          <h2 className="text-lg font-semibold text-slate-800 mb-6">Iniciar sesión</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-8">
+          <h2 className="text-lg font-semibold text-carbon mb-6">Iniciar sesión</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
@@ -120,8 +117,8 @@ export default function Login() {
           )}
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} Law Kit — Chile
+        <p className="text-center text-xs text-muted mt-6">
+          © {new Date().getFullYear()} lawkit — Chile
         </p>
       </div>
     </div>

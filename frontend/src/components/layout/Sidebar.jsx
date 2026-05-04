@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import Logo from '../ui/Logo'
 
 const IconDashboard = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,20 +60,15 @@ export default function Sidebar() {
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-white/15 text-white'
-        : 'text-slate-300 hover:bg-white/10 hover:text-white'
+        ? 'bg-primary text-white shadow-sm'
+        : 'text-zinc-300 hover:bg-white/5 hover:text-white'
     }`
 
   return (
-    <aside className="w-64 min-h-screen flex flex-col" style={{ backgroundColor: '#1e3a5f' }}>
+    <aside className="w-64 min-h-screen flex flex-col bg-carbon">
       {/* Logo */}
       <div className="px-6 py-6 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-primary font-bold text-sm">LK</span>
-          </div>
-          <span className="text-white font-semibold text-lg tracking-tight">Law Kit</span>
-        </div>
+        <Logo light size="md" />
       </div>
 
       {/* Navegación */}
@@ -87,7 +83,7 @@ export default function Sidebar() {
 
       {/* Versión */}
       <div className="px-6 py-4 border-t border-white/10">
-        <p className="text-slate-400 text-xs">Law Kit v1.0</p>
+        <p className="text-zinc-500 text-xs">v1.0</p>
       </div>
     </aside>
   )
