@@ -47,6 +47,7 @@ export default function PresupuestoForm() {
   const [idActual, setIdActual]   = useState(id || null)
   const [loading, setLoading]     = useState(esEdicion)
   const [error, setError]         = useState('')
+  const [acuerdoId, setAcuerdoId] = useState(null)
 
   useEffect(() => {
     if (!esEdicion) return
@@ -68,6 +69,7 @@ export default function PresupuestoForm() {
             : [itemVacio()],
         })
         setToken(d.token_unico)
+        setAcuerdoId(d.acuerdo_id || null)
       })
       .catch(() => setError('No se pudo cargar el presupuesto'))
       .finally(() => setLoading(false))
@@ -409,6 +411,8 @@ export default function PresupuestoForm() {
         nombreProspecto={form.nombre_prospecto}
         correoProspecto={form.correo}
         telefonoProspecto={form.telefono}
+        estado={form.estado}
+        acuerdoId={acuerdoId}
         ensureSaved={ensureSaved}
         onGuardarBorrador={handleGuardarBorrador}
         permiteEliminar={Boolean(idActual)}

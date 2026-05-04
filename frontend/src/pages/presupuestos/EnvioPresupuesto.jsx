@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import api from '../../services/api'
 
 const asuntoDefault = 'Presupuesto de servicios legales - Law Kit'
@@ -39,6 +39,7 @@ function Modal({ titulo, children, onClose }) {
 
 export default function EnvioPresupuesto({
   presupuestoId, nombreProspecto, correoProspecto, telefonoProspecto,
+  estado, acuerdoId,
   ensureSaved, onGuardarBorrador, permiteEliminar,
 }) {
   const navigate = useNavigate()
@@ -181,6 +182,28 @@ export default function EnvioPresupuesto({
       {toast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[70] bg-emerald-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-lg">
           ✓ {toast}
+        </div>
+      )}
+
+      {/* Banner: presupuesto aceptado → ya hay acuerdo de cobro */}
+      {estado === 'aceptado' && acuerdoId && (
+        <div className="max-w-3xl mx-auto mb-4">
+          <div className="card border-2 border-emerald-200 bg-emerald-50/50 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">✓</div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-800 text-sm">Presupuesto aceptado</h3>
+              <p className="text-xs text-slate-600 mt-1">
+                Se creó automáticamente el cliente, la causa, el acuerdo y las cuotas.
+                Cuando marques la primera cuota como pagada, se enviará el formulario al cliente.
+              </p>
+            </div>
+            <Link
+              to={`/cobros/acuerdo/${acuerdoId}`}
+              className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold whitespace-nowrap"
+            >
+              Ver cobros →
+            </Link>
+          </div>
         </div>
       )}
 

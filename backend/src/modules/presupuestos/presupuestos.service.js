@@ -2,6 +2,93 @@ const crypto         = require('crypto');
 const pool           = require('../../config/db');
 const gestionesSvc   = require('../gestiones/gestiones.service');
 
+/** Genera fechas de cuotas mensuales a partir de la fecha base. */
+function fechasMensuales(fechaInicio, cantidad) {
+  const fechas = [];
+  const base = new Date(fechaInicio);
+  for (let i = 0; i < cantidad; i++) {
+    const f = new Date(base);
+    f.setMonth(f.getMonth() + i);
+    fechas.push(f.toISOString().split('T')[0]);
+  }
+  return fechas;
+}
+
+/**
+ * Aceptación del presupuesto: dentro de la transacción crea cliente +
+ * causa + acuerdo + cuotas y vincula todo al presupuesto.
+ */
+async function activarPresupuesto(client, pres) {
+  // 1) Cliente con estado 'pendiente' (completará su ficha desde el portal)
+  const partes = String(pres.nombre_prospecto || '').trim().split(/\s+/);
+  const nombre    = partes[0] || pres.nombre_prospecto || 'Cliente';
+  const apellidos = partes.slice(1).join(' ') || null;
+  const tokenIngreso = crypto.randomBytes(24).toString('hex');
+
+  const { rows: cli } = await client.query(
+    `INSERT INTO clientes
+       (nombre, apellidos, email, telefono, estado, abogado_id, token_ingreso)
+     VALUES ($1,$2,$3,$4,'pendiente',$5,$6)
+     RETURNING id`,
+    [nombre, apellidos, pres.correo || null, pres.telefono || null,
+     pres.abogado_id, tokenIngreso]
+  );
+  const clienteId = cli[0].id;
+
+  // 2) Causa
+  const materias = Array.isArray(pres.materias) ? pres.materias : [];
+  const materiaPrincipal = materias[0] || null;
+  const tituloCausa =
+    materias.length ? materias.join(' / ') : (pres.descripcion?.slice(0, 200) || 'Caso de ' + nombre);
+
+  const { rows: cau } = await client.query(
+    `INSERT INTO causas (titulo, descripcion, materia, estado,
+                         cliente_id, abogado_id, fecha_inicio)
+     VALUES ($1,$2,$3,'activa',$4,$5,CURRENT_DATE)
+     RETURNING id`,
+    [tituloCausa, pres.descripcion || null, materiaPrincipal, clienteId, pres.abogado_id]
+  );
+  const causaId = cau[0].id;
+
+  // 3) Acuerdo de cobro vinculado a la causa
+  const numeroCuotas = Number(pres.numero_cuotas) || 1;
+  const fechaPrimera = pres.fecha_primera_cuota || new Date().toISOString().split('T')[0];
+
+  const { rows: acu } = await client.query(
+    `INSERT INTO acuerdos_cobro
+       (causa_id, descripcion, monto_total, tipo_cobro, fecha_acuerdo, estado, notas)
+     VALUES ($1,$2,$3,'cuotas',CURRENT_DATE,'vigente',$4)
+     RETURNING id`,
+    [causaId, pres.descripcion || null, pres.honorarios_total || 0,
+     pres.notas || null]
+  );
+  const acuerdoId = acu[0].id;
+
+  // 4) Cuotas mensuales: usamos el monto_cuota acordado en el presupuesto
+  if (numeroCuotas > 0) {
+    const fechas = fechasMensuales(fechaPrimera, numeroCuotas);
+    const montoCuota = pres.monto_cuota
+      ? Number(pres.monto_cuota)
+      : Number((Number(pres.honorarios_total) / numeroCuotas).toFixed(2));
+
+    for (let i = 0; i < fechas.length; i++) {
+      await client.query(
+        `INSERT INTO cuotas (acuerdo_id, numero_cuota, monto, fecha_vencimiento)
+         VALUES ($1,$2,$3,$4)`,
+        [acuerdoId, i + 1, montoCuota, fechas[i]]
+      );
+    }
+  }
+
+  // 5) Vincula cliente_id + acuerdo_id al presupuesto
+  await client.query(
+    `UPDATE presupuestos SET cliente_id = $1, acuerdo_id = $2 WHERE id = $3`,
+    [clienteId, acuerdoId, pres.id]
+  );
+
+  return { clienteId, causaId, acuerdoId };
+}
+
 // ---------- helpers ----------
 
 async function itemsDe(presupuestoId) {
@@ -230,20 +317,48 @@ async function responder(token, accion) {
     throw { status: 400, mensaje: 'Acción inválida. Use "aceptado" o "rechazado"' };
   }
 
-  const actual = await obtenerPorToken(token);
-  if (!actual) return null;
-  if (!['enviado','borrador'].includes(actual.estado)) {
-    throw { status: 400, mensaje: `El presupuesto ya fue ${actual.estado}` };
-  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
 
-  const { rows } = await pool.query(
-    `UPDATE presupuestos
-     SET estado = $1, respondido_en = NOW()
-     WHERE token_unico = $2
-     RETURNING *`,
-    [accion, token]
-  );
-  return rows[0];
+    // Bloqueamos la fila para evitar doble-aceptación concurrente
+    const { rows: actuales } = await client.query(
+      `SELECT * FROM presupuestos WHERE token_unico = $1 FOR UPDATE`,
+      [token]
+    );
+    const actual = actuales[0];
+    if (!actual) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+    if (!['enviado','borrador'].includes(actual.estado)) {
+      await client.query('ROLLBACK');
+      throw { status: 400, mensaje: `El presupuesto ya fue ${actual.estado}` };
+    }
+
+    const { rows: actualizado } = await client.query(
+      `UPDATE presupuestos
+         SET estado = $1, respondido_en = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [accion, actual.id]
+    );
+    let pres = actualizado[0];
+
+    // Si es aceptación, creamos cliente + causa + acuerdo + cuotas
+    if (accion === 'aceptado' && !pres.acuerdo_id) {
+      const { acuerdoId } = await activarPresupuesto(client, pres);
+      pres.acuerdo_id = acuerdoId;
+    }
+
+    await client.query('COMMIT');
+    return pres;
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 async function eliminar(id, { rol, usuarioId }) {
