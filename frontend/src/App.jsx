@@ -18,6 +18,7 @@ import PresupuestoForm    from './pages/presupuestos/PresupuestoForm'
 import PresupuestoPublico from './pages/presupuestos/PresupuestoPublico'
 import GestionesCatalogo  from './pages/presupuestos/GestionesCatalogo'
 import PortalCliente      from './pages/portal/PortalCliente'
+import ConfiguracionEstudio from './pages/configuracion/ConfiguracionEstudio'
 
 export default function App() {
   return (
@@ -56,6 +57,9 @@ export default function App() {
           <Route path="/cobros/nuevo"              element={<AcuerdoForm />} />
           <Route path="/cobros/causa/:causaId"     element={<AcuerdosLista />} />
           <Route path="/cobros/acuerdo/:id"        element={<AcuerdoDetalle />} />
+
+          {/* Configuración del estudio */}
+          <Route path="/configuracion" element={<ConfiguracionEstudio />} />
 
           {/* Solo admin */}
           <Route element={<AdminRoute />}>

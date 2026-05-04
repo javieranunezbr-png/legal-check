@@ -18,6 +18,16 @@ async function marcarPagada(req, res) {
   }
 }
 
+async function actualizarFecha(req, res) {
+  try {
+    const cuota = await svc.actualizarFechaVencimiento(req.params.id, req.body.fecha_vencimiento);
+    res.json(cuota);
+  } catch (err) {
+    const status = err.status || 500;
+    res.status(status).json({ mensaje: err.mensaje || 'Error al actualizar fecha' });
+  }
+}
+
 async function actualizarVencidas(req, res) {
   try {
     const resultado = await svc.actualizarVencidas();
@@ -27,4 +37,4 @@ async function actualizarVencidas(req, res) {
   }
 }
 
-module.exports = { listarPorAcuerdo, marcarPagada, actualizarVencidas };
+module.exports = { listarPorAcuerdo, marcarPagada, actualizarFecha, actualizarVencidas };

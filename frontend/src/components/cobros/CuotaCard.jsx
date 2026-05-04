@@ -15,14 +15,32 @@ const estilosEstado = {
   condonada: { card: 'border-slate-100 bg-slate-50',      dot: 'bg-slate-200',  texto: 'text-slate-400' },
 }
 
-export default function CuotaCard({ cuota, total, onPagada }) {
+export default function CuotaCard({ cuota, total, onPagada, onActualizada }) {
   const [abierto,   setAbierto]   = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [error,     setError]     = useState('')
   const [pago, setPago] = useState({ fecha_pago: '', metodo_pago: 'Transferencia', notas: '' })
 
+  const [editandoFecha, setEditandoFecha] = useState(false)
+  const [nuevaFecha, setNuevaFecha]       = useState(cuota.fecha_vencimiento?.slice(0, 10) || '')
+  const [guardandoFecha, setGuardandoFecha] = useState(false)
+
   const est = estilosEstado[cuota.estado] ?? estilosEstado.pendiente
   const puedeMarcar = ['pendiente', 'vencida'].includes(cuota.estado)
+
+  const guardarFecha = async () => {
+    if (!nuevaFecha) return
+    setGuardandoFecha(true)
+    try {
+      const { data } = await api.patch(`/cuotas/${cuota.id}/fecha`, { fecha_vencimiento: nuevaFecha })
+      setEditandoFecha(false)
+      onActualizada?.(data)
+    } catch (err) {
+      setError(err.response?.data?.mensaje || 'Error al actualizar la fecha')
+    } finally {
+      setGuardandoFecha(false)
+    }
+  }
 
   const handlePagar = async (e) => {
     e.preventDefault()
@@ -54,10 +72,44 @@ export default function CuotaCard({ cuota, total, onPagada }) {
               Cuota {cuota.numero_cuota}
               <span className="text-slate-400 font-normal"> / {total}</span>
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Vencimiento: <span className={cuota.estado === 'vencida' ? 'text-red-600 font-medium' : ''}>
-                {fmt(cuota.fecha_vencimiento)}
-              </span>
+            <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
+              Vencimiento:{' '}
+              {editandoFecha ? (
+                <span className="inline-flex items-center gap-1">
+                  <input
+                    type="date"
+                    value={nuevaFecha}
+                    onChange={e => setNuevaFecha(e.target.value)}
+                    className="border border-slate-200 rounded px-1.5 py-0.5 text-xs"
+                  />
+                  <button
+                    onClick={guardarFecha}
+                    disabled={guardandoFecha}
+                    className="text-emerald-600 hover:text-emerald-700 text-xs font-medium px-1"
+                  >
+                    {guardandoFecha ? '...' : '✓'}
+                  </button>
+                  <button
+                    onClick={() => { setEditandoFecha(false); setNuevaFecha(cuota.fecha_vencimiento?.slice(0,10) || '') }}
+                    className="text-slate-400 hover:text-slate-600 text-xs px-1"
+                  >×</button>
+                </span>
+              ) : (
+                <>
+                  <span className={cuota.estado === 'vencida' ? 'text-red-600 font-medium' : ''}>
+                    {fmt(cuota.fecha_vencimiento)}
+                  </span>
+                  {puedeMarcar && (
+                    <button
+                      onClick={() => setEditandoFecha(true)}
+                      className="text-slate-400 hover:text-primary text-xs"
+                      title="Editar fecha"
+                    >
+                      ✎
+                    </button>
+                  )}
+                </>
+              )}
             </p>
             {cuota.fecha_pago && (
               <p className="text-xs text-emerald-600 mt-0.5">Pagada el {fmt(cuota.fecha_pago)} · {cuota.metodo_pago}</p>

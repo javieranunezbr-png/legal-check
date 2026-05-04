@@ -14,7 +14,7 @@ const MATERIAS = [
 const VACIO = {
   nombre_prospecto: '', correo: '', telefono: '', descripcion: '',
   materias: [], numero_cuotas: 1,
-  fecha_primera_cuota: '', notas: '', estado: 'borrador',
+  notas: '', estado: 'borrador',
   items: [],
 }
 
@@ -58,7 +58,6 @@ export default function PresupuestoForm() {
           ...VACIO,
           ...d,
           materias: d.materias || [],
-          fecha_primera_cuota: d.fecha_primera_cuota?.slice(0, 10) || '',
           items: (d.items && d.items.length > 0)
             ? d.items.map(it => ({
                 nombre: it.nombre,
@@ -155,7 +154,6 @@ export default function PresupuestoForm() {
       honorarios_total: totalItems,
       numero_cuotas: Number(form.numero_cuotas) || 1,
       monto_cuota: montoCuota,
-      fecha_primera_cuota: form.fecha_primera_cuota || null,
       items: itemsLimpios,
     }
 
@@ -383,15 +381,16 @@ export default function PresupuestoForm() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
             <Campo label="Número de cuotas">
               <input name="numero_cuotas" type="number" min="1" max="60"
                 value={form.numero_cuotas} onChange={set} className="input" />
             </Campo>
-            <Campo label="Fecha primera cuota">
-              <input name="fecha_primera_cuota" type="date"
-                value={form.fecha_primera_cuota} onChange={set} className="input" />
-            </Campo>
+            <p className="text-xs text-slate-500 leading-relaxed pb-2">
+              💡 La fecha de la primera cuota se asignará automáticamente cuando marques
+              el primer pago como recibido. Las cuotas siguientes se calcularán mensualmente
+              desde esa fecha (siempre podrás editarlas manualmente).
+            </p>
           </div>
         </div>
 

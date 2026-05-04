@@ -12,6 +12,7 @@ const dashboardRoutes    = require('./modules/dashboard/dashboard.routes');
 const presupuestosRoutes = require('./modules/presupuestos/presupuestos.routes');
 const gestionesRoutes    = require('./modules/gestiones/gestiones.routes');
 const portalRoutes       = require('./modules/portal/portal.routes');
+const configRoutes       = require('./modules/configuracion/configuracion.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +31,7 @@ app.use('/api/dashboard',    dashboardRoutes);
 app.use('/api/presupuestos', presupuestosRoutes);
 app.use('/api/gestiones',    gestionesRoutes);
 app.use('/api/portal',       portalRoutes);
+app.use('/api/configuracion', configRoutes);
 
 // Health check
 app.get('/api/health', (_, res) => res.json({ estado: 'OK' }));

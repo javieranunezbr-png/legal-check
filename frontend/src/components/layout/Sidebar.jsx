@@ -45,6 +45,7 @@ const navItems = [
   { path: '/causas',       label: 'Causas',       icon: <IconFolder /> },
   { path: '/presupuestos', label: 'Presupuestos', icon: <IconDoc /> },
   { path: '/cobros',       label: 'Cobros',       icon: <IconMoney /> },
+  { path: '/configuracion', label: 'Configuración', icon: <IconSettings /> },
 ]
 
 const adminItems = [

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../../services/api'
+import { COMUNAS_POR_REGION, REGIONES } from '../../data/comunasChile'
 
 const ESTADO_CIVIL = [
   ['', 'Selecciona...'],
@@ -24,26 +25,6 @@ const COMO_NOS_CONOCISTE = [
   ['instagram', 'Instagram'],
   ['recomendacion', 'Recomendación'],
   ['otro', 'Otro'],
-]
-
-const REGIONES = [
-  '',
-  'Arica y Parinacota',
-  'Tarapacá',
-  'Antofagasta',
-  'Atacama',
-  'Coquimbo',
-  'Valparaíso',
-  'Metropolitana',
-  "O'Higgins",
-  'Maule',
-  'Ñuble',
-  'Biobío',
-  'La Araucanía',
-  'Los Ríos',
-  'Los Lagos',
-  'Aysén',
-  'Magallanes',
 ]
 
 const VACIO = {
@@ -86,6 +67,17 @@ export default function PortalCliente() {
   const set = (campo) => (e) =>
     setForm(f => ({ ...f, [campo]: e.target.value }))
 
+  // Cambiar de región resetea la comuna
+  const setRegion = (e) => {
+    const region = e.target.value
+    setForm(f => ({ ...f, region, comuna: '' }))
+  }
+
+  const comunasDeRegion = useMemo(
+    () => (form.region ? COMUNAS_POR_REGION[form.region] || [] : []),
+    [form.region]
+  )
+
   const enviar = async (e) => {
     e.preventDefault()
     setErrorEnvio('')
@@ -121,11 +113,10 @@ export default function PortalCliente() {
         <Encabezado />
         <div className="p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
-          <h1 className="text-xl font-semibold text-slate-800 mb-2">¡Tus datos fueron recibidos. Bienvenido/a!</h1>
-          <p className="text-sm text-slate-500">
-            {info?.abogado_nombre
-              ? `${info.abogado_nombre} se contactará contigo pronto.`
-              : 'Te contactaremos pronto.'}
+          <h1 className="text-xl font-semibold text-slate-800 mb-3">¡Tus datos fueron recibidos. Bienvenido/a!</h1>
+          <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {info?.mensaje_bienvenida ||
+              'Hemos recibido tus datos correctamente. Te contactaremos a la brevedad.'}
           </p>
         </div>
       </Tarjeta>
@@ -149,25 +140,31 @@ export default function PortalCliente() {
               <Select label="Estado civil" value={form.estado_civil} onChange={set('estado_civil')} options={ESTADO_CIVIL} required />
               <Input label="Nacionalidad" value={form.nacionalidad} onChange={set('nacionalidad')} required />
               <Select label="Género" value={form.genero} onChange={set('genero')} options={GENERO} required />
-              <Input
-                label="Clave única"
-                value={form.clave_unica}
-                onChange={set('clave_unica')}
-                hint="Solo tu abogado podrá verla. Es opcional."
-              />
             </Grid>
+
+            <CampoClaveUnica value={form.clave_unica} onChange={set('clave_unica')} />
           </Seccion>
 
           <Seccion titulo="Dirección">
             <Input label="Calle y número" value={form.direccion} onChange={set('direccion')} required />
             <Grid>
-              <Input label="Comuna" value={form.comuna} onChange={set('comuna')} required />
               <Select
                 label="Región"
                 value={form.region}
-                onChange={set('region')}
-                options={REGIONES.map(r => [r, r || 'Selecciona...'])}
+                onChange={setRegion}
+                options={[['', 'Selecciona...'], ...REGIONES.map(r => [r, r])]}
                 required
+              />
+              <Select
+                label="Comuna"
+                value={form.comuna}
+                onChange={set('comuna')}
+                options={[
+                  ['', form.region ? 'Selecciona...' : 'Selecciona primero la región'],
+                  ...comunasDeRegion.map(c => [c, c]),
+                ]}
+                required
+                disabled={!form.region}
               />
             </Grid>
           </Seccion>
@@ -211,6 +208,8 @@ export default function PortalCliente() {
     </Pantalla>
   )
 }
+
+/* -------------------------------- helpers -------------------------------- */
 
 function Pantalla({ children }) {
   return (
@@ -286,7 +285,7 @@ function Select({ label, options, required, ...props }) {
       <select
         {...props}
         required={required}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] disabled:bg-slate-50 disabled:text-slate-400"
       >
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
@@ -303,5 +302,63 @@ function Textarea({ label, ...props }) {
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
       />
     </label>
+  )
+}
+
+/**
+ * Campo "Clave única" con ícono de candado, mensaje de protección
+ * y validación obligatoria. Visualmente más destacado que el resto.
+ */
+function CampoClaveUnica({ value, onChange }) {
+  const [verClave, setVerClave] = useState(false)
+
+  return (
+    <div className="border border-slate-200 rounded-xl bg-slate-50/60 p-4 mt-3">
+      <div className="flex items-start gap-3">
+        {/* Ícono candado */}
+        <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 text-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.105 0 2 .895 2 2v3a2 2 0 11-4 0v-3c0-1.105.895-2 2-2zm6-2V7a6 6 0 10-12 0v2H4v12h16V9h-2zm-10 0V7a4 4 0 118 0v2H8z" />
+          </svg>
+        </div>
+        <div className="flex-1 space-y-1">
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-800">
+              Clave única
+              <span className="text-red-500 ml-0.5">*</span>
+            </span>
+          </label>
+          <div className="relative">
+            <input
+              type={verClave ? 'text' : 'password'}
+              value={value}
+              onChange={onChange}
+              required
+              autoComplete="off"
+              placeholder="••••••••"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] bg-white"
+            />
+            <button
+              type="button"
+              onClick={() => setVerClave(v => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 px-2 py-1"
+              tabIndex={-1}
+            >
+              {verClave ? 'Ocultar' : 'Mostrar'}
+            </button>
+          </div>
+          <p className="text-xs text-slate-500 leading-relaxed flex items-start gap-1.5 pt-1">
+            <svg className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>
+              <b className="text-slate-700">Tu información está protegida.</b> Esta clave será utilizada
+              únicamente por tu abogado para realizar gestiones en tu nombre y queda bajo estricto
+              <b> secreto profesional</b>. Nunca será compartida con terceros.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }

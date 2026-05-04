@@ -16,6 +16,7 @@ export default function AcuerdoDetalle() {
   const { data: acuerdo, loading, error, setData } = useApi(`/acuerdos/${id}`)
 
   // Actualiza la cuota en el estado local tras marcarla como pagada
+  // o tras editar su fecha de vencimiento (sin recargar)
   const handleCuotaPagada = useCallback((cuotaActualizada) => {
     setData(prev => ({
       ...prev,
@@ -24,6 +25,7 @@ export default function AcuerdoDetalle() {
       ),
     }))
   }, [setData])
+  const handleCuotaActualizada = handleCuotaPagada
 
   if (loading) return <Spinner />
   if (error)   return <div className="card text-red-600 text-sm">{error}</div>
@@ -135,6 +137,7 @@ export default function AcuerdoDetalle() {
               cuota={c}
               total={cuotas.length}
               onPagada={handleCuotaPagada}
+              onActualizada={handleCuotaActualizada}
             />
           ))
         )}

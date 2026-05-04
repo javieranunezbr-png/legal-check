@@ -65,14 +65,45 @@ async function dispararPortalIngresoSiCorresponde(cuota) {
   }
 }
 
+/**
+ * Si se marcó como pagada la primera cuota del acuerdo, ajusta la fecha de
+ * vencimiento de las cuotas pendientes/vencidas siguientes para que se
+ * calculen mensualmente desde la fecha de pago efectiva. Esto cubre el caso
+ * en que el presupuesto no traía fecha_primera_cuota y las cuotas se crearon
+ * con fechas placeholder.
+ */
+async function ajustarFechasSiguientes(cuotaPagada) {
+  if (Number(cuotaPagada.numero_cuota) !== 1) return;
+  const fechaBase = cuotaPagada.fecha_pago;
+  if (!fechaBase) return;
+
+  const { rows } = await pool.query(
+    `SELECT id, numero_cuota FROM cuotas
+     WHERE acuerdo_id = $1 AND estado IN ('pendiente','vencida')
+     ORDER BY numero_cuota`,
+    [cuotaPagada.acuerdo_id]
+  );
+
+  for (const c of rows) {
+    const f = new Date(fechaBase);
+    f.setMonth(f.getMonth() + (Number(c.numero_cuota) - 1));
+    const fechaIso = f.toISOString().split('T')[0];
+    await pool.query(
+      `UPDATE cuotas SET fecha_vencimiento = $1 WHERE id = $2`,
+      [fechaIso, c.id]
+    );
+  }
+}
+
 async function marcarPagada(id, { fecha_pago, metodo_pago, comprobante, notas }) {
   const { rows } = await pool.query(
     `UPDATE cuotas SET
-       estado      = 'pagada',
-       fecha_pago  = COALESCE($1, CURRENT_DATE),
-       metodo_pago = COALESCE($2, metodo_pago),
-       comprobante = COALESCE($3, comprobante),
-       notas       = COALESCE($4, notas)
+       estado            = 'pagada',
+       fecha_pago        = COALESCE($1, CURRENT_DATE),
+       fecha_vencimiento = COALESCE(fecha_vencimiento, COALESCE($1, CURRENT_DATE)),
+       metodo_pago       = COALESCE($2, metodo_pago),
+       comprobante       = COALESCE($3, comprobante),
+       notas             = COALESCE($4, notas)
      WHERE id = $5 AND estado != 'pagada'
      RETURNING *`,
     [fecha_pago, metodo_pago, comprobante, notas, id]
@@ -84,9 +115,26 @@ async function marcarPagada(id, { fecha_pago, metodo_pago, comprobante, notas })
     throw { status: 409, mensaje: 'La cuota ya está marcada como pagada' };
   }
 
+  // Si era la primera cuota, recalcular fechas de las siguientes
+  await ajustarFechasSiguientes(rows[0]);
+
   // Trigger del portal del cliente — no esperamos resultado
   dispararPortalIngresoSiCorresponde(rows[0]);
 
+  return rows[0];
+}
+
+async function actualizarFechaVencimiento(id, fecha_vencimiento) {
+  if (!fecha_vencimiento) {
+    throw { status: 400, mensaje: 'Falta la fecha de vencimiento' };
+  }
+  const { rows } = await pool.query(
+    `UPDATE cuotas SET fecha_vencimiento = $1
+     WHERE id = $2 AND estado != 'pagada'
+     RETURNING *`,
+    [fecha_vencimiento, id]
+  );
+  if (!rows[0]) throw { status: 404, mensaje: 'Cuota no encontrada o ya pagada' };
   return rows[0];
 }
 
@@ -99,4 +147,4 @@ async function actualizarVencidas() {
   return { actualizadas: rowCount, cuotas: rows };
 }
 
-module.exports = { listarPorAcuerdo, marcarPagada, actualizarVencidas };
+module.exports = { listarPorAcuerdo, marcarPagada, actualizarFechaVencimiento, actualizarVencidas };

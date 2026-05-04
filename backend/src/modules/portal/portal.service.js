@@ -1,5 +1,6 @@
-const crypto = require('crypto');
-const pool   = require('../../config/db');
+const crypto    = require('crypto');
+const pool      = require('../../config/db');
+const configSvc = require('../configuracion/configuracion.service');
 
 /** Normaliza RUT chileno: elimina puntos, guiones y espacios. */
 function normalizarRut(rut) {
@@ -9,7 +10,7 @@ function normalizarRut(rut) {
 
 const CAMPOS_REQUERIDOS = [
   'nombre','apellidos','rut','email','telefono','ocupacion',
-  'estado_civil','nacionalidad','genero',
+  'estado_civil','nacionalidad','genero','clave_unica',
   'direccion','comuna','region',
   'como_nos_conociste',
 ];
@@ -18,6 +19,7 @@ const ETIQUETAS = {
   nombre: 'Nombres', apellidos: 'Apellidos', rut: 'RUT',
   email: 'Correo electrónico', telefono: 'Teléfono', ocupacion: 'Ocupación',
   estado_civil: 'Estado civil', nacionalidad: 'Nacionalidad', genero: 'Género',
+  clave_unica: 'Clave única',
   direccion: 'Dirección', comuna: 'Comuna', region: 'Región',
   como_nos_conociste: '¿Cómo nos conociste?',
 };
@@ -26,14 +28,17 @@ const ETIQUETAS = {
 async function obtenerPorToken(token) {
   const { rows } = await pool.query(
     `SELECT c.id, c.nombre, c.apellidos, c.email, c.telefono,
-            c.ingreso_completado,
+            c.ingreso_completado, c.abogado_id,
             u.nombre AS abogado_nombre
      FROM clientes c
      LEFT JOIN usuarios u ON u.id = c.abogado_id
      WHERE c.token_ingreso = $1`,
     [token]
   );
-  return rows[0] || null;
+  const cli = rows[0];
+  if (!cli) return null;
+  cli.mensaje_bienvenida = await configSvc.obtenerMensajeBienvenida(cli.abogado_id);
+  return cli;
 }
 
 /**

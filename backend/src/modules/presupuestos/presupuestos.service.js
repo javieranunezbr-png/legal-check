@@ -64,18 +64,22 @@ async function activarPresupuesto(client, pres) {
   );
   const acuerdoId = acu[0].id;
 
-  // 4) Cuotas mensuales: usamos el monto_cuota acordado en el presupuesto
+  // 4) Cuotas mensuales: usamos el monto_cuota acordado en el presupuesto.
+  //    Si no hay fecha_primera_cuota, las cuotas se crean con
+  //    fecha_vencimiento NULL — al marcar la primera como pagada se
+  //    recalcularán mensualmente desde la fecha de pago.
   if (numeroCuotas > 0) {
-    const fechas = fechasMensuales(fechaPrimera, numeroCuotas);
+    const tieneFechaInicio = Boolean(pres.fecha_primera_cuota);
+    const fechas = tieneFechaInicio ? fechasMensuales(fechaPrimera, numeroCuotas) : null;
     const montoCuota = pres.monto_cuota
       ? Number(pres.monto_cuota)
       : Number((Number(pres.honorarios_total) / numeroCuotas).toFixed(2));
 
-    for (let i = 0; i < fechas.length; i++) {
+    for (let i = 0; i < numeroCuotas; i++) {
       await client.query(
         `INSERT INTO cuotas (acuerdo_id, numero_cuota, monto, fecha_vencimiento)
          VALUES ($1,$2,$3,$4)`,
-        [acuerdoId, i + 1, montoCuota, fechas[i]]
+        [acuerdoId, i + 1, montoCuota, fechas ? fechas[i] : null]
       );
     }
   }
