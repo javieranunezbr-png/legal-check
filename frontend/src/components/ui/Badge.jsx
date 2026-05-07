@@ -1,29 +1,39 @@
-// Paleta Law Kit: morado para estados activos/vigentes,
-// verde para confirmaciones (pagada), rojo para alertas (vencida),
-// gris para neutros, ámbar para suspendido.
+// Códigos de color por significado:
+//   verde  → estados "OK / vivo / pagado / aceptado"
+//   rojo   → alertas, pendientes que requieren acción, vencidos, rechazos
+//   ámbar  → suspendidos / pausados
+//   gris   → neutros / cerrados / archivados
+//   morado → estados "informativos en curso" (enviado, derivado)
 const config = {
   // Clientes
-  vigente:    'bg-violet-100 text-violet-700',
-  activo:     'bg-violet-100 text-violet-700',
-  pendiente:  'bg-zinc-100  text-zinc-600',
-  terminado:  'bg-zinc-100  text-zinc-500',
-  derivado:   'bg-zinc-100  text-zinc-600',
+  vigente:     'bg-emerald-100 text-emerald-700',
+  activo:      'bg-emerald-100 text-emerald-700',
+  pendiente:   'bg-red-100     text-red-700',
+  terminado:   'bg-zinc-100    text-zinc-500',
+  derivado:    'bg-violet-100  text-violet-700',
+
   // Causas
-  activa:     'bg-violet-100 text-violet-700',
-  cerrada:    'bg-zinc-100  text-zinc-500',
-  suspendida: 'bg-amber-100 text-amber-700',
-  archivada:  'bg-zinc-100  text-zinc-500',
+  activa:      'bg-emerald-100 text-emerald-700',
+  cerrada:     'bg-zinc-100    text-zinc-500',
+  suspendida:  'bg-amber-100   text-amber-700',
+  archivada:   'bg-zinc-100    text-zinc-500',
+
   // Acuerdos
-  vigente_acuerdo: 'bg-violet-100 text-violet-700',
+  // ('vigente' ya está mapeado arriba)
+  completado:  'bg-emerald-100 text-emerald-700',
+  incumplido:  'bg-red-100     text-red-700',
+  anulado:     'bg-zinc-100    text-zinc-500',
+
   // Cuotas
-  pagada:     'bg-emerald-100 text-emerald-700',
-  vencida:    'bg-red-100  text-red-700',
-  condonada:  'bg-zinc-100 text-zinc-500',
+  pagada:      'bg-emerald-100 text-emerald-700',
+  vencida:     'bg-red-100     text-red-700',
+  condonada:   'bg-zinc-100    text-zinc-500',
+
   // Presupuestos
-  borrador:   'bg-zinc-100 text-zinc-600',
-  enviado:    'bg-violet-100 text-violet-700',
-  aceptado:   'bg-emerald-100 text-emerald-700',
-  rechazado:  'bg-red-100 text-red-700',
+  borrador:    'bg-zinc-100    text-zinc-600',
+  enviado:     'bg-violet-100  text-violet-700',
+  aceptado:    'bg-emerald-100 text-emerald-700',
+  rechazado:   'bg-red-100     text-red-700',
 }
 
 export default function Badge({ estado }) {
