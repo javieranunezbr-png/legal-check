@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '../components/ui/Logo'
 
@@ -50,7 +51,7 @@ const PLANES = [
 ]
 
 /* ----------------------------------------------------------------- */
-/* Primitivas                                                         */
+/* Primitivas de movimiento                                           */
 
 function Rise({ delay = 0, as: Tag = 'div', className = '', children }) {
   return (
@@ -60,22 +61,44 @@ function Rise({ delay = 0, as: Tag = 'div', className = '', children }) {
   )
 }
 
-/* Visual de producto generado (no placeholder): mini-panel de lawkit */
+/* Reveal al hacer scroll (IntersectionObserver, una vez) */
+function Reveal({ as: Tag = 'div', delay = 0, className = '', children }) {
+  const ref = useRef(null)
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect() } },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return (
+    <Tag ref={ref} className={`lk-reveal ${shown ? 'in' : ''} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </Tag>
+  )
+}
+
+/* Visual de producto: mini-panel de lawkit con vida */
 function ProductoVisual() {
   const dias = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
   const eventos = { 3: 'audiencia', 8: 'gestion', 9: 'gestion', 16: 'reunion', 22: 'plazo' }
   const dot = {
     audiencia: 'bg-red-400', gestion: 'bg-primary',
-    reunion: 'bg-sky-400', plazo: 'bg-amber-400',
+    reunion: 'bg-sky-500', plazo: 'bg-amber-400',
   }
   return (
     <div className="relative">
       <div className="absolute -inset-6 bg-primary/5 rounded-[2rem] -z-10" />
-      <div className="bg-white rounded-2xl border border-zinc-200/80 shadow-xl shadow-primary/5 p-5 rotate-1">
+      <div className="bg-white rounded-2xl border border-line shadow-2xl shadow-primary/10 p-5 rotate-1 transition-transform duration-500 hover:rotate-0">
         <div className="flex items-center gap-1.5 mb-5">
-          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
-          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
-          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
+          <span className="w-2.5 h-2.5 rounded-full bg-line" />
+          <span className="w-2.5 h-2.5 rounded-full bg-line" />
+          <span className="w-2.5 h-2.5 rounded-full bg-line" />
           <span className="ml-3 text-[11px] font-medium text-muted">Agenda · esta semana</span>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
@@ -91,18 +114,18 @@ function ProductoVisual() {
                 hoy ? 'bg-primary text-white font-semibold' : 'bg-soft text-carbon/70'
               }`}>
                 {n}
-                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-white' : dot[ev]}`} />}
+                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-white lk-pulse' : dot[ev]}`} />}
               </div>
             )
           })}
         </div>
-        <div className="mt-5 pt-4 border-t border-zinc-100">
+        <div className="mt-5 pt-4 border-t border-line">
           <div className="flex items-center justify-between text-[11px] mb-1.5">
             <span className="font-medium text-carbon">Honorarios · 4 de 6 cuotas</span>
             <span className="text-muted">66%</span>
           </div>
           <div className="h-2 rounded-full bg-soft overflow-hidden">
-            <div className="h-full rounded-full bg-primary" style={{ width: '66%' }} />
+            <div className="h-full rounded-full bg-primary lk-grow" style={{ width: '66%' }} />
           </div>
         </div>
       </div>
@@ -113,28 +136,40 @@ function ProductoVisual() {
 /* ----------------------------------------------------------------- */
 
 export default function Landing() {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const f = () => setScrolled(window.scrollY > 8)
+    f()
+    window.addEventListener('scroll', f, { passive: true })
+    return () => window.removeEventListener('scroll', f)
+  }, [])
+
   return (
     <div className="min-h-screen bg-bone text-carbon antialiased">
 
-      {/* NAV */}
-      <header className="sticky top-0 z-40 bg-bone/85 backdrop-blur-sm">
+      {/* NAV con reacción al scroll */}
+      <header className={`sticky top-0 z-40 transition-all duration-300 ${
+        scrolled
+          ? 'bg-bone/90 backdrop-blur-md border-b border-line shadow-sm'
+          : 'bg-transparent border-b border-transparent'
+      }`}>
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <Logo size="md" />
+          <Logo size="md" animated />
           <nav className="hidden sm:flex items-center gap-8 text-sm text-muted">
-            <a href="#producto" className="hover:text-carbon transition-colors">Producto</a>
-            <a href="#flujo" className="hover:text-carbon transition-colors">Cómo funciona</a>
-            <a href="#vision" className="hover:text-carbon transition-colors">Visión</a>
+            <a href="#producto" className="lk-navlink hover:text-carbon transition-colors">Producto</a>
+            <a href="#flujo" className="lk-navlink hover:text-carbon transition-colors">Cómo funciona</a>
+            <a href="#vision" className="lk-navlink hover:text-carbon transition-colors">Visión</a>
           </nav>
           <Link
             to="/login"
-            className="text-sm font-medium text-carbon hover:text-primary transition-colors"
+            className="text-sm font-semibold text-carbon hover:text-primary transition-colors"
           >
             Acceso clientes
           </Link>
         </div>
       </header>
 
-      {/* HERO — asimétrico, izquierda, display grande */}
+      {/* HERO */}
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-28 sm:pt-28 sm:pb-36">
         <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
           <div className="lg:col-span-7">
@@ -155,46 +190,47 @@ export default function Landing() {
             </Rise>
             <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
               <a href="#flujo"
-                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-lg shadow-primary/20 hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300">
                 Ver cómo funciona
               </a>
               <a href="#contacto"
-                className="px-6 py-3 rounded-lg font-semibold text-teal hover:bg-soft transition-colors">
+                className="px-6 py-3 rounded-lg font-semibold text-primary hover:bg-soft transition-colors">
                 Contáctanos
               </a>
             </Rise>
           </div>
-          <Rise delay={320} className="lg:col-span-5">
+          <Rise delay={340} className="lg:col-span-5">
             <ProductoVisual />
           </Rise>
         </div>
       </section>
 
-      {/* PROBLEMA — declaración + lista numerada, sin tarjetas */}
+      {/* PROBLEMA */}
       <section className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
           <div className="grid lg:grid-cols-12 gap-12">
-            <h2 className="lg:col-span-5 font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
+            <Reveal as="h2" className="lg:col-span-5 font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               El abogado independiente pierde tiempo y dinero en administración.
-            </h2>
+            </Reveal>
             <ol className="lg:col-span-7 lg:pt-2">
               {PROBLEMAS.map((p, i) => (
-                <li key={i} className="flex gap-5 py-5 border-b border-white/10 last:border-0">
-                  <span className="font-display text-sm text-primary/90 tabular-nums pt-1">
+                <Reveal as="li" key={i} delay={i * 90}
+                  className="flex gap-5 py-5 border-b border-white/10 last:border-0">
+                  <span className="font-display text-sm text-primary tabular-nums pt-1">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <p className="text-lg text-zinc-300 leading-relaxed">{p}</p>
-                </li>
+                </Reveal>
               ))}
             </ol>
           </div>
         </div>
       </section>
 
-      {/* PRODUCTO — lista editorial, sin grilla de cards idénticas */}
+      {/* PRODUCTO */}
       <section id="producto" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
-          <div className="lg:col-span-4">
+          <Reveal className="lg:col-span-4">
             <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Una plataforma para todo el ciclo del cliente
             </h2>
@@ -202,40 +238,45 @@ export default function Landing() {
               Desde el primer presupuesto hasta la gestión completa del caso.
               Cada pieza conectada con la siguiente.
             </p>
-          </div>
+          </Reveal>
           <div className="lg:col-span-8">
             {MODULOS.map(([t, d], i) => (
-              <div key={t}
-                className="grid sm:grid-cols-12 gap-2 sm:gap-6 py-7 border-t border-zinc-200 first:border-0 first:pt-0">
+              <Reveal key={t} delay={i * 70}
+                className="group grid sm:grid-cols-12 gap-2 sm:gap-6 py-7 border-t border-line first:border-0 first:pt-0 transition-colors hover:bg-soft/60 rounded-lg sm:px-4 sm:-mx-4">
                 <div className="sm:col-span-5 flex items-baseline gap-4">
-                  <span className="font-display text-sm text-primary tabular-nums">
+                  <span className="font-display text-sm text-primary tabular-nums transition-transform duration-300 group-hover:-translate-y-0.5">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="font-display font-semibold text-xl text-carbon">{t}</h3>
+                  <h3 className="font-display font-bold text-xl text-carbon">{t}</h3>
                 </div>
                 <p className="sm:col-span-7 text-muted leading-relaxed">{d}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FLUJO — sección grafito, acentos mandarina (premium) */}
-      <section id="flujo" className="bg-carbon text-white">
+      {/* FLUJO — grafito, línea de conexión animada */}
+      <section id="flujo" className="bg-carbon text-white overflow-hidden">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
-          <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-5xl leading-tight max-w-2xl">
+          <Reveal as="h2" className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-5xl leading-tight max-w-2xl">
             Del presupuesto al cliente activo, <span className="text-primary">en automático.</span>
-          </h2>
-          <div className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
-            {FLUJO.map(([t, d], i) => (
-              <div key={t}>
-                <div className="font-display text-2xl font-extrabold text-primary">
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <h3 className="mt-3 font-display font-bold text-lg">{t}</h3>
-                <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{d}</p>
-              </div>
-            ))}
+          </Reveal>
+          <div className="relative mt-16">
+            <div className="hidden lg:block absolute top-[14px] left-0 right-0 h-px bg-white/15" />
+            <div className="grid gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
+              {FLUJO.map(([t, d], i) => (
+                <Reveal key={t} delay={i * 110} className="relative">
+                  <div className="relative inline-flex items-center justify-center w-7 h-7 rounded-full bg-carbon ring-1 ring-primary/40">
+                    <span className="font-display text-xs font-extrabold text-primary tabular-nums">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-display font-bold text-lg">{t}</h3>
+                  <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{d}</p>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -243,7 +284,7 @@ export default function Landing() {
       {/* DIFERENCIADORES */}
       <section className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          <div className="lg:col-span-5">
+          <Reveal className="lg:col-span-5">
             <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Diseñado para quien la competencia ignora
             </h2>
@@ -252,25 +293,26 @@ export default function Landing() {
               abogado independiente y los estudios que necesitan ordenarse sin
               fricción.
             </p>
-          </div>
+          </Reveal>
           <ul className="lg:col-span-7">
             {DIFERENCIADORES.map((d, i) => (
-              <li key={i} className="flex gap-5 py-6 border-b border-zinc-200 last:border-0">
+              <Reveal as="li" key={i} delay={i * 80}
+                className="flex gap-5 py-6 border-b border-line last:border-0">
                 <svg className="w-5 h-5 text-primary flex-shrink-0 mt-1" fill="none"
                   stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span className="text-lg text-carbon/90 leading-relaxed">{d}</span>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
       </section>
 
-      {/* MODELO DE NEGOCIO — sin precios, sin tarjetas idénticas */}
+      {/* MODELO DE NEGOCIO */}
       <section className="bg-soft">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
-          <div className="max-w-2xl">
+          <Reveal className="max-w-2xl">
             <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Suscripción mensual, sin instalaciones
             </h2>
@@ -278,14 +320,15 @@ export default function Landing() {
               Software como servicio, con planes según el tamaño del estudio.
               Los valores se definen al cierre del desarrollo en curso.
             </p>
-          </div>
-          <div className="mt-14 grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 border-y border-zinc-200">
-            {PLANES.map(([t, d]) => (
-              <div key={t} className="px-0 sm:px-8 py-8 first:pl-0 last:pr-0">
-                <h3 className="font-display font-semibold text-xl text-carbon">Plan {t}</h3>
+          </Reveal>
+          <div className="mt-14 grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-line border-y border-line">
+            {PLANES.map(([t, d], i) => (
+              <Reveal key={t} delay={i * 90}
+                className="px-0 sm:px-8 py-8 first:pl-0 last:pr-0">
+                <h3 className="font-display font-bold text-xl text-carbon">Plan {t}</h3>
                 <p className="mt-3 text-sm text-muted leading-relaxed">{d}</p>
-                <p className="mt-6 text-xs font-medium text-primary">Disponible próximamente</p>
-              </div>
+                <p className="mt-6 text-xs font-semibold text-primary">Disponible próximamente</p>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -294,7 +337,7 @@ export default function Landing() {
       {/* VISIÓN */}
       <section id="vision" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
-          <div className="lg:col-span-4">
+          <Reveal className="lg:col-span-4">
             <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Hacia el estudio totalmente digital
             </h2>
@@ -302,15 +345,16 @@ export default function Landing() {
               El núcleo de gestión ya opera. La hoja de ruta avanza hacia la
               automatización completa del trabajo legal.
             </p>
-          </div>
+          </Reveal>
           <ol className="lg:col-span-8">
             {VISION.map((v, i) => (
-              <li key={i} className="flex gap-5 py-6 border-b border-zinc-200 last:border-0">
+              <Reveal as="li" key={i} delay={i * 70}
+                className="flex gap-5 py-6 border-b border-line last:border-0">
                 <span className="font-display text-sm text-primary tabular-nums pt-1">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <p className="text-lg text-carbon/90 leading-relaxed">{v}</p>
-              </li>
+              </Reveal>
             ))}
           </ol>
         </div>
@@ -319,17 +363,19 @@ export default function Landing() {
       {/* CONTACTO */}
       <section id="contacto" className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
-          <h2 className="font-display font-extrabold tracking-[-0.02em] text-4xl sm:text-6xl leading-[1.03] max-w-3xl">
+          <Reveal as="h2" className="font-display font-extrabold tracking-[-0.02em] text-4xl sm:text-6xl leading-[1.03] max-w-3xl">
             Tu estudio puede funcionar mejor. <span className="text-primary">Hablemos.</span>
-          </h2>
-          <p className="mt-6 text-lg text-zinc-400 max-w-xl leading-relaxed">
+          </Reveal>
+          <Reveal as="p" delay={120} className="mt-6 text-lg text-zinc-400 max-w-xl leading-relaxed">
             Estamos construyendo el software de gestión que el abogado
             independiente realmente puede usar. Cuéntanos de tu estudio.
-          </p>
-          <a href="mailto:contacto@lawkit.cl"
-            className="mt-10 inline-block bg-primary text-white px-7 py-3.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
-            contacto@lawkit.cl
-          </a>
+          </Reveal>
+          <Reveal delay={220}>
+            <a href="mailto:contacto@lawkit.cl"
+              className="mt-10 inline-block bg-primary text-white px-7 py-3.5 rounded-lg font-semibold shadow-lg shadow-primary/20 hover:bg-primary-dark hover:-translate-y-0.5 transition-all duration-300">
+              contacto@lawkit.cl
+            </a>
+          </Reveal>
         </div>
       </section>
 

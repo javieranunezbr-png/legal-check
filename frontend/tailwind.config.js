@@ -4,16 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta oficial lawkit — dirección "Grafito + mandarina"
+        // Paleta oficial lawkit — "Grafito + verdemar" (logo: expediente)
         primary: {
-          DEFAULT: '#FF7A2E',  // mandarina — acento / CTA
-          light:   '#FF9A5C',
-          dark:    '#E2620F',  // hover / pressed
+          DEFAULT: '#1C6E63',  // verdemar — acento / CTA
+          light:   '#2E8A7D',
+          dark:    '#155E54',  // hover / pressed
         },
         teal: {
-          DEFAULT: '#1C6E63',  // verdemar — 2º acento, links, acciones secundarias
+          DEFAULT: '#1C6E63',  // alias de marca (compat)
           soft:    '#D6EBE7',
         },
+        ember: '#E2742A',      // acento cálido puntual (chips/alertas suaves)
         // Neutros cálidos (impeccable: nada de #000/#fff puro)
         carbon:  '#1F2125',    // grafito — superficies oscuras, texto fuerte
         ink2:    '#3A3D44',    // tinta media — texto secundario
