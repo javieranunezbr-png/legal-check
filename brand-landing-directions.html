@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lawkit · 4 direcciones de landing (con movimiento)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Figtree',system-ui,sans-serif;background:#0c0c0e}
+  .tagbar{position:sticky;top:0;z-index:50;background:#16161a;color:#cfcfcf;font-size:13px;padding:10px 20px;text-align:center;border-bottom:1px solid #2a2a30}
+  .tagbar b{color:#fff}
+  section.demo{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:70px 24px}
+  .inner{max-width:1080px;margin:0 auto;width:100%}
+  .badge{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:22px}
+  .logo{display:inline-flex;align-items:center;gap:9px;font-weight:900;font-size:22px;letter-spacing:-.03em}
+  .fmark{width:26px;height:23px}
+  h1{font-weight:900;letter-spacing:-.035em;line-height:1}
+  .btn{display:inline-block;padding:15px 30px;border-radius:11px;font-weight:800;font-size:15px;text-decoration:none}
+  /* ---------- A · LINEAR/VERCEL (dark) ---------- */
+  #a{background:#1F2125;color:#fff}
+  #a .glow{position:absolute;width:760px;height:760px;border-radius:50%;
+    background:radial-gradient(circle,rgba(28,110,99,.38),transparent 60%);
+    top:-260px;right:-180px;filter:blur(20px);animation:floaty 9s ease-in-out infinite}
+  #a .grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:46px 46px;mask-image:radial-gradient(circle at 70% 30%,#000,transparent 70%)}
+  #a h1{font-size:clamp(40px,7vw,86px)}
+  #a .panel{margin-top:30px;background:#26272c;border:1px solid #ffffff14;border-radius:16px;padding:18px;max-width:560px;animation:rise 1s ease both,bob 6s ease-in-out 1s infinite;position:relative;overflow:hidden}
+  #a .panel::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,#ffffff14,transparent);animation:sheen 4.5s ease-in-out infinite}
+  .bar{height:9px;border-radius:6px;background:#1C6E63;margin:7px 0}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(34px)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes sheen{0%{left:-60%}55%,100%{left:130%}}
+  @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+  /* ---------- B · STRIPE (light, diagrama animado) ---------- */
+  #b{background:#FAFAF7;color:#1F2125}
+  #b .blob{position:absolute;width:620px;height:620px;border-radius:50%;
+    background:radial-gradient(circle,rgba(28,110,99,.22),transparent 62%);
+    left:-180px;bottom:-220px;filter:blur(10px);animation:drift 12s ease-in-out infinite}
+  #b h1{font-size:clamp(36px,5.6vw,66px)}
+  #b .flow{display:flex;align-items:center;gap:0;margin-top:42px;flex-wrap:wrap}
+  #b .node{background:#fff;border:1px solid #DED9CF;border-radius:14px;padding:16px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 24px -14px rgba(0,0,0,.2)}
+  #b .pipe{position:relative;width:64px;height:3px;background:#E4E0D6}
+  #b .pipe i{position:absolute;top:-3px;width:9px;height:9px;border-radius:50%;background:#1C6E63;animation:run 2.4s linear infinite}
+  @keyframes run{0%{left:-4px}100%{left:60px}}
+  @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-30px)}}
+  /* ---------- C · EL HERO ES EL PRODUCTO ---------- */
+  #c{background:#101216;color:#fff}
+  #c .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:46px;align-items:center}
+  #c h1{font-size:clamp(34px,5vw,60px)}
+  #c .app{background:#191b20;border:1px solid #ffffff12;border-radius:16px;overflow:hidden;box-shadow:0 30px 70px -30px #000;display:grid;grid-template-columns:120px 1fr;height:340px}
+  #c .side{background:#1f2127;padding:16px 12px;border-right:1px solid #ffffff0d}
+  #c .side i{display:block;height:8px;border-radius:4px;background:#ffffff14;margin:11px 4px}
+  #c .side i.on{background:#1C6E63}
+  #c .screen{position:relative}
+  #c .scr{position:absolute;inset:0;padding:22px;opacity:0}
+  #c .s1{animation:cyc 9s infinite}#c .s2{animation:cyc 9s infinite 3s}#c .s3{animation:cyc 9s infinite 6s}
+  @keyframes cyc{0%{opacity:0;transform:translateY(10px)}6%,30%{opacity:1;transform:translateY(0)}36%,100%{opacity:0}}
+  #c .ln{height:10px;border-radius:5px;background:#ffffff14;margin:9px 0}
+  #c .chip{display:inline-block;padding:5px 12px;border-radius:999px;background:#1C6E63;color:#fff;font-size:12px;font-weight:800;margin-top:6px}
+  /* ---------- D · BOLD / IMPACTO ---------- */
+  #d{background:#1C6E63;color:#FAFAF7}
+  #d h1{font-size:clamp(54px,12vw,150px);line-height:.92}
+  #d .marq{margin-top:34px;overflow:hidden;white-space:nowrap;border-top:1px solid #ffffff33;border-bottom:1px solid #ffffff33;padding:14px 0}
+  #d .marq span{display:inline-block;font-weight:900;font-size:22px;letter-spacing:-.02em;animation:scroll 16s linear infinite;padding-right:34px;opacity:.85}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  #d .big2{display:block;color:#1F2125}
+  @media(max-width:760px){#c .wrap{grid-template-columns:1fr}#c .app{height:280px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="tagbar">Desplázate y mira el <b>movimiento real</b> de cada dirección. Dime: <b>A</b>, <b>B</b>, <b>C</b> o <b>D</b>.</div>
+
+<!-- A -->
+<section class="demo" id="a">
+  <div class="grid"></div><div class="glow"></div>
+  <div class="inner">
+    <div class="logo"><svg class="fmark" viewBox="0 0 32 28"><path d="M3 8.5A3 3 0 0 1 6 5.5h5.7a3 3 0 0 1 2.2 1l1.5 1.7a3 3 0 0 0 2.2 1H26a3 3 0 0 1 3 3v9.3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z" fill="#1C6E63"/></svg><span>lawkit</span></div>
+    <div style="height:26px"></div>
+    <span class="badge" style="background:#1C6E6333;color:#5fd9c8">A · Estilo Linear / Vercel</span>
+    <h1>Todo tu estudio,<br><span style="color:#3fae9d">en un solo lugar.</span></h1>
+    <div class="panel">
+      <div style="font-size:12px;color:#9aa;font-weight:700;margin-bottom:10px">Panel · lawkit</div>
+      <div class="bar" style="width:85%"></div><div class="bar" style="width:62%;opacity:.5"></div><div class="bar" style="width:73%;opacity:.5"></div>
+      <div style="margin-top:12px;font-size:12px;color:#7fd4c6">● cobro recibido · cliente activo</div>
+    </div>
+    <div style="margin-top:30px"><a class="btn" style="background:#1C6E63;color:#fff">Ver cómo funciona</a></div>
+    <p style="margin-top:22px;color:#8a8a92;font-size:13px;max-width:440px">Oscuro, premium, mucho contraste. Glow y panel que flotan, brillo que recorre. Se ve caro y muy tech.</p>
+  </div>
+</section>
+
+<!-- B -->
+<section class="demo" id="b">
+  <div class="blob"></div>
+  <div class="inner">
+    <div class="logo" style="color:#1F2125"><svg class="fmark" viewBox="0 0 32 28"><path d="M3 8.5A3 3 0 0 1 6 5.5h5.7a3 3 0 0 1 2.2 1l1.5 1.7a3 3 0 0 0 2.2 1H26a3 3 0 0 1 3 3v9.3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z" fill="#1C6E63"/></svg><span>lawkit</span></div>
+    <div style="height:26px"></div>
+    <span class="badge" style="background:#1C6E6318;color:#155E54">B · Estilo Stripe</span>
+    <h1>Del presupuesto al<br><span style="color:#1C6E63">cliente activo.</span></h1>
+    <p style="margin-top:16px;color:#6F6C64;font-size:17px;max-width:440px">Claro, luminoso, súper pulido. Un diagrama vivo del flujo y un gradiente suave que se mueve.</p>
+    <div class="flow">
+      <div class="node">Presupuesto</div>
+      <div class="pipe"><i></i></div>
+      <div class="node">Cobro</div>
+      <div class="pipe"><i style="animation-delay:.8s"></i></div>
+      <div class="node">Portal</div>
+      <div class="pipe"><i style="animation-delay:1.6s"></i></div>
+      <div class="node" style="background:#1C6E63;color:#fff;border-color:#1C6E63">Cliente activo</div>
+    </div>
+    <div style="margin-top:34px"><a class="btn" style="background:#1C6E63;color:#fff">Ver cómo funciona</a></div>
+  </div>
+</section>
+
+<!-- C -->
+<section class="demo" id="c">
+  <div class="inner wrap">
+    <div>
+      <span class="badge" style="background:#1C6E6333;color:#5fd9c8">C · El hero ES el producto</span>
+      <h1>Míralo<br>funcionando.</h1>
+      <p style="margin-top:16px;color:#9a9aa2;font-size:17px;max-width:380px">El panel real de lawkit se anima solo: presupuesto → cobro → cliente activo. El visitante ve el producto antes de entrar.</p>
+      <div style="margin-top:26px"><a class="btn" style="background:#1C6E63;color:#fff">Probar lawkit</a></div>
+    </div>
+    <div class="app">
+      <div class="side"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <div class="screen">
+        <div class="scr s1"><div style="font-weight:800;font-size:13px;color:#cfcfd4">Nuevo presupuesto</div><div class="ln" style="width:80%"></div><div class="ln" style="width:55%"></div><div class="ln" style="width:65%"></div><span class="chip">Enviar al cliente</span></div>
+        <div class="scr s2"><div style="font-weight:800;font-size:13px;color:#cfcfd4">Cobros · 6 cuotas</div><div class="ln" style="width:90%"></div><div class="ln" style="width:70%"></div><div style="height:9px;border-radius:5px;background:#1C6E63;width:60%;margin:9px 0"></div><span class="chip">Cuota pagada</span></div>
+        <div class="scr s3"><div style="font-weight:800;font-size:13px;color:#cfcfd4">Cliente</div><div class="ln" style="width:75%"></div><div class="ln" style="width:50%"></div><span class="chip">● Activo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- D -->
+<section class="demo" id="d">
+  <div class="inner">
+    <div class="logo" style="color:#FAFAF7"><svg class="fmark" viewBox="0 0 32 28"><path d="M3 8.5A3 3 0 0 1 6 5.5h5.7a3 3 0 0 1 2.2 1l1.5 1.7a3 3 0 0 0 2.2 1H26a3 3 0 0 1 3 3v9.3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z" fill="#FAFAF7"/></svg><span>lawkit</span></div>
+    <div style="height:30px"></div>
+    <span class="badge" style="background:#ffffff22;color:#fff">D · Bold / impacto</span>
+    <h1>TODO TU<br><span class="big2">ESTUDIO.</span></h1>
+    <div class="marq"><span>Clientes · Presupuestos · Cobros en cuotas · Agenda · Portal del cliente · Clientes · Presupuestos · Cobros en cuotas · Agenda · Portal del cliente · </span></div>
+    <div style="margin-top:34px"><a class="btn" style="background:#1F2125;color:#fff">Ver cómo funciona</a></div>
+    <p style="margin-top:22px;color:#d8efe9;font-size:13px;max-width:440px">Tipografía gigante, color pleno, secciones a pantalla completa. Audaz y memorable.</p>
+  </div>
+</section>
+
+</body>
+</html>

@@ -39,7 +39,7 @@ export default function Logo({
     xl: { text: 'text-5xl sm:text-6xl', mark: 'w-[44px] h-[39px] mr-3.5' },
   }
   const s = sizes[size] || sizes.md
-  const accent = light ? '#FAFAF7' : '#1C6E63'
+  const accent = light ? '#FAFAF7' : '#E0A52E'
 
   if (iconOnly) {
     return <LogoMark className={`${s.mark} mr-0 ${className}`} accent={accent} animated={animated} />

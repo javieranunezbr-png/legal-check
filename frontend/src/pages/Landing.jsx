@@ -83,27 +83,27 @@ function Reveal({ as: Tag = 'div', delay = 0, className = '', children }) {
   )
 }
 
-/* Visual de producto: mini-panel de lawkit con vida */
+/* Visual de producto: panel premium oscuro con vida */
 function ProductoVisual() {
   const dias = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
   const eventos = { 3: 'audiencia', 8: 'gestion', 9: 'gestion', 16: 'reunion', 22: 'plazo' }
   const dot = {
     audiencia: 'bg-red-400', gestion: 'bg-primary',
-    reunion: 'bg-sky-500', plazo: 'bg-amber-400',
+    reunion: 'bg-sky-400', plazo: 'bg-primary/60',
   }
   return (
     <div className="relative">
-      <div className="absolute -inset-6 bg-primary/5 rounded-[2rem] -z-10" />
-      <div className="bg-white rounded-2xl border border-line shadow-2xl shadow-primary/10 p-5 rotate-1 transition-transform duration-500 hover:rotate-0">
+      <div className="absolute -inset-10 bg-primary/10 rounded-[3rem] blur-2xl -z-10" />
+      <div className="lk-bob lk-sheen relative overflow-hidden bg-[#26272c] rounded-2xl border border-white/10 shadow-2xl shadow-black/40 p-5">
         <div className="flex items-center gap-1.5 mb-5">
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
-          <span className="ml-3 text-[11px] font-medium text-muted">Agenda · esta semana</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <span className="ml-3 text-[11px] font-medium text-zinc-400">Panel · esta semana</span>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
           {dias.map((d, i) => (
-            <div key={i} className="text-center text-[10px] font-semibold text-muted pb-1">{d}</div>
+            <div key={i} className="text-center text-[10px] font-semibold text-zinc-500 pb-1">{d}</div>
           ))}
           {Array.from({ length: 28 }, (_, i) => {
             const n = i + 1
@@ -111,22 +111,23 @@ function ProductoVisual() {
             const hoy = n === 9
             return (
               <div key={n} className={`aspect-square rounded-md flex flex-col items-center justify-center text-[10px] ${
-                hoy ? 'bg-primary text-white font-semibold' : 'bg-soft text-carbon/70'
+                hoy ? 'bg-primary text-carbon font-bold' : 'bg-white/[0.04] text-zinc-400'
               }`}>
                 {n}
-                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-white lk-pulse' : dot[ev]}`} />}
+                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-carbon lk-pulse' : dot[ev]}`} />}
               </div>
             )
           })}
         </div>
-        <div className="mt-5 pt-4 border-t border-line">
+        <div className="mt-5 pt-4 border-t border-white/10">
           <div className="flex items-center justify-between text-[11px] mb-1.5">
-            <span className="font-medium text-carbon">Honorarios · 4 de 6 cuotas</span>
-            <span className="text-muted">66%</span>
+            <span className="font-medium text-zinc-200">Honorarios · 4 de 6 cuotas</span>
+            <span className="text-zinc-500">66%</span>
           </div>
-          <div className="h-2 rounded-full bg-soft overflow-hidden">
+          <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
             <div className="h-full rounded-full bg-primary lk-grow" style={{ width: '66%' }} />
           </div>
+          <p className="mt-3 text-[11px] font-medium text-primary">● cobro recibido · cliente activo</p>
         </div>
       </div>
     </div>
@@ -147,61 +148,76 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-bone text-carbon antialiased">
 
-      {/* NAV con reacción al scroll */}
-      <header className={`sticky top-0 z-40 transition-all duration-300 ${
+      {/* NAV con reacción al scroll (sobre hero oscuro) */}
+      <header className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
         scrolled
           ? 'bg-bone/90 backdrop-blur-md border-b border-line shadow-sm'
           : 'bg-transparent border-b border-transparent'
       }`}>
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <Logo size="md" animated />
-          <nav className="hidden sm:flex items-center gap-8 text-sm text-muted">
-            <a href="#producto" className="lk-navlink hover:text-carbon transition-colors">Producto</a>
-            <a href="#flujo" className="lk-navlink hover:text-carbon transition-colors">Cómo funciona</a>
-            <a href="#vision" className="lk-navlink hover:text-carbon transition-colors">Visión</a>
+          <Logo size="md" animated light={!scrolled} />
+          <nav className={`hidden sm:flex items-center gap-8 text-sm transition-colors ${scrolled ? 'text-muted' : 'text-zinc-400'}`}>
+            <a href="#producto" className={`lk-navlink transition-colors ${scrolled ? 'hover:text-carbon' : 'hover:text-white'}`}>Producto</a>
+            <a href="#flujo" className={`lk-navlink transition-colors ${scrolled ? 'hover:text-carbon' : 'hover:text-white'}`}>Cómo funciona</a>
+            <a href="#vision" className={`lk-navlink transition-colors ${scrolled ? 'hover:text-carbon' : 'hover:text-white'}`}>Visión</a>
           </nav>
           <Link
             to="/login"
-            className="text-sm font-semibold text-carbon hover:text-primary transition-colors"
+            className={`text-sm font-semibold transition-colors ${scrolled ? 'text-carbon hover:text-primary' : 'text-white hover:text-primary'}`}
           >
             Acceso clientes
           </Link>
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-28 sm:pt-28 sm:pb-36">
-        <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
-          <div className="lg:col-span-7">
-            <Rise as="p" className="text-sm font-semibold text-primary tracking-wide">
-              Software de gestión para abogados
-            </Rise>
-            <Rise as="h1" delay={80}
-              className="mt-5 font-display font-extrabold tracking-[-0.02em] text-carbon text-5xl sm:text-7xl leading-[1.0]">
-              Todo tu estudio,
-              <br />
-              <span className="text-primary">en un solo lugar.</span>
-            </Rise>
-            <Rise as="p" delay={160}
-              className="mt-7 text-lg text-ink2 leading-relaxed max-w-xl">
-              Clientes, presupuestos, cobros en cuotas y agenda, conectados
-              entre sí. Cierra presupuestos más rápido, cobra a tiempo y no
-              vuelvas a perder un plazo. Deja la planilla atrás.
-            </Rise>
-            <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
-              <a href="#flujo"
-                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-lg shadow-primary/20 hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300">
-                Ver cómo funciona
-              </a>
-              <a href="#contacto"
-                className="px-6 py-3 rounded-lg font-semibold text-primary hover:bg-soft transition-colors">
-                Contáctanos
-              </a>
+      {/* HERO — dinámico, oscuro, premium */}
+      <section className="relative overflow-hidden bg-carbon text-white">
+        {/* grid + glow ambiental */}
+        <div className="absolute inset-0 opacity-[0.5]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',
+            backgroundSize: '46px 46px',
+            maskImage: 'radial-gradient(circle at 72% 30%, #000, transparent 72%)',
+            WebkitMaskImage: 'radial-gradient(circle at 72% 30%, #000, transparent 72%)',
+          }}
+        />
+        <div className="lk-floaty absolute -top-64 -right-40 w-[760px] h-[760px] rounded-full blur-2xl -z-0"
+          style={{ background: 'radial-gradient(circle, rgba(224,165,46,0.22), transparent 60%)' }}
+        />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-36 pb-28 sm:pt-44 sm:pb-36">
+          <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
+            <div className="lg:col-span-7">
+              <Rise as="p" className="inline-block text-xs font-bold tracking-[0.1em] uppercase text-primary bg-primary/10 px-3 py-1.5 rounded-full">
+                Software de gestión para abogados
+              </Rise>
+              <Rise as="h1" delay={80}
+                className="mt-6 font-display font-extrabold tracking-[-0.02em] text-white text-5xl sm:text-7xl leading-[1.0]">
+                Todo tu estudio,
+                <br />
+                <span className="text-primary">en un solo lugar.</span>
+              </Rise>
+              <Rise as="p" delay={160}
+                className="mt-7 text-lg text-zinc-400 leading-relaxed max-w-xl">
+                Clientes, presupuestos, cobros en cuotas y agenda, conectados
+                entre sí. Cierra presupuestos más rápido, cobra a tiempo y no
+                vuelvas a perder un plazo. Deja la planilla atrás.
+              </Rise>
+              <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
+                <a href="#flujo"
+                  className="bg-primary text-carbon px-6 py-3.5 rounded-lg font-bold shadow-xl shadow-primary/20 hover:bg-primary-light hover:-translate-y-0.5 transition-all duration-300">
+                  Ver cómo funciona
+                </a>
+                <a href="#contacto"
+                  className="px-6 py-3.5 rounded-lg font-semibold text-white border border-white/15 hover:bg-white/5 transition-colors">
+                  Contáctanos
+                </a>
+              </Rise>
+            </div>
+            <Rise delay={340} className="lg:col-span-5">
+              <ProductoVisual />
             </Rise>
           </div>
-          <Rise delay={340} className="lg:col-span-5">
-            <ProductoVisual />
-          </Rise>
         </div>
       </section>
 

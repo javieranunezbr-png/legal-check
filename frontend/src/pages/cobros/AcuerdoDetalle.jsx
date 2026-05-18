@@ -97,7 +97,7 @@ export default function AcuerdoDetalle() {
           <div className="h-2 bg-slate-100 rounded-full">
             <div
               className="h-2 rounded-full transition-all"
-              style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#16a34a' : '#1C6E63' }}
+              style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#16a34a' : '#E0A52E' }}
             />
           </div>
         </div>
