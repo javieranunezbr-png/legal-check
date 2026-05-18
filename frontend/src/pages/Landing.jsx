@@ -1,322 +1,343 @@
 import { Link } from 'react-router-dom'
 import Logo from '../components/ui/Logo'
 
-/* ---------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* Datos                                                              */
 
 const PROBLEMAS = [
-  'Manejan a sus clientes en planillas Excel o "en la cabeza".',
-  'Cobran las cuotas de honorarios de forma manual por correo y WhatsApp.',
-  'No tienen visibilidad de qué gestiones o audiencias están pendientes.',
+  'Gestionan a sus clientes en planillas o de memoria.',
+  'Cobran las cuotas de honorarios a mano, por correo y WhatsApp.',
+  'No tienen visibilidad de qué gestiones o audiencias vienen.',
   'El software jurídico que existe es caro, complejo y poco intuitivo.',
 ]
 
 const MODULOS = [
-  {
-    titulo: 'Clientes y causas',
-    desc: 'Ficha completa de cada cliente, sus causas y documentos, en un solo lugar y con búsqueda rápida.',
-    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
-  },
-  {
-    titulo: 'Presupuestos con aceptación online',
-    desc: 'El abogado crea un presupuesto y lo envía por correo o WhatsApp. El prospecto lo acepta desde un link, sin instalar nada.',
-    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-  },
-  {
-    titulo: 'Cobros en cuotas automáticos',
-    desc: 'Al aceptar el presupuesto se genera el acuerdo y todas las cuotas. Control de pagado, pendiente y vencido con alertas.',
-    icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
-  },
-  {
-    titulo: 'Portal del cliente',
-    desc: 'Tras el primer pago, el cliente recibe un link y completa sus datos en un formulario seguro. Queda activo automáticamente.',
-    icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-  },
-  {
-    titulo: 'Agenda y alertas',
-    desc: 'Calendario de audiencias, gestiones y plazos por abogado, con avisos de lo que vence esta semana.',
-    icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-  },
-  {
-    titulo: 'Identidad del estudio',
-    desc: 'Mensajes y comunicaciones con el cliente personalizables, manteniendo la imagen profesional del estudio.',
-    icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
-  },
+  ['Clientes y causas', 'Ficha completa de cada cliente, sus causas y documentos, con búsqueda inmediata.'],
+  ['Presupuestos con aceptación online', 'El abogado lo envía por correo o WhatsApp. El prospecto acepta desde un link, sin instalar nada.'],
+  ['Cobros en cuotas', 'Al aceptar el presupuesto se genera el acuerdo y todas las cuotas. Pagado, pendiente y vencido, con alertas.'],
+  ['Portal del cliente', 'Tras el primer pago el cliente completa sus datos en un formulario seguro y queda activo.'],
+  ['Agenda y plazos', 'Audiencias, gestiones y vencimientos por abogado, con aviso de lo que corre esta semana.'],
+  ['Identidad del estudio', 'La comunicación con el cliente se personaliza y mantiene la imagen del estudio.'],
 ]
 
 const FLUJO = [
-  ['Presupuesto', 'El abogado crea el presupuesto y lo envía por correo o WhatsApp.'],
-  ['Aceptación', 'El prospecto lo revisa y acepta desde un link público, sin registrarse.'],
-  ['Cobro', 'Se genera automáticamente el acuerdo de honorarios y sus cuotas.'],
-  ['Portal', 'Tras el primer pago, el cliente completa su ficha y queda activo.'],
-  ['Gestión', 'El estudio administra causas, cobros y agenda desde un solo panel.'],
+  ['Presupuesto', 'El abogado lo crea y lo envía por correo o WhatsApp.'],
+  ['Aceptación', 'El prospecto lo acepta desde un link público, sin registrarse.'],
+  ['Cobro', 'Se genera el acuerdo de honorarios y todas sus cuotas.'],
+  ['Portal', 'Tras el primer pago el cliente completa su ficha y queda activo.'],
+  ['Gestión', 'Causas, cobros y agenda administrados desde un solo panel.'],
 ]
 
 const DIFERENCIADORES = [
-  'Todo en un solo lugar: gestión, cobros, presupuestos y agenda integrados.',
+  'Todo el ciclo del cliente integrado: gestión, presupuestos, cobros y agenda.',
   'Precio accesible, pensado para abogados independientes y estudios jurídicos.',
-  'Presupuestos con aceptación online y portal del cliente integrados.',
-  'Flujo automático del presupuesto al cliente activo, sin pasos manuales.',
-  'Fácil de usar: cualquier abogado lo opera sin capacitación.',
+  'Del presupuesto al cliente activo de forma automática, sin pasos manuales.',
+  'Fácil: cualquier abogado lo opera el primer día, sin capacitación.',
 ]
 
 const VISION = [
-  'Generación automática de mandato y contrato de prestación de servicios.',
-  'Firma electrónica avanzada (FEA) del contrato desde el link del cliente.',
+  'Mandato y contrato de prestación de servicios generados automáticamente.',
+  'Firma electrónica avanzada del contrato desde el link del cliente.',
   'Asesorías online con agenda y pago integrado.',
-  'Emisión de boletas/facturas e integración con el SII.',
-  'Seguimiento de causas en el Poder Judicial con alertas de plazos.',
+  'Emisión de boletas y facturas con integración tributaria.',
+  'Seguimiento de causas en tribunales con alertas de plazos.',
 ]
 
-/* ---------------------------------------------------------------- */
+const PLANES = [
+  ['Solo', 'El abogado independiente que trabaja por su cuenta.'],
+  ['Estudio', 'Un estudio jurídico con su equipo de abogados.'],
+  ['Pro', 'Estudios con varios abogados y mayor volumen de casos.'],
+]
 
-function Seccion({ id, children, className = '' }) {
+/* ----------------------------------------------------------------- */
+/* Primitivas                                                         */
+
+function Rise({ delay = 0, as: Tag = 'div', className = '', children }) {
   return (
-    <section id={id} className={`max-w-6xl mx-auto px-5 sm:px-8 ${className}`}>
+    <Tag className={`lk-rise ${className}`} style={{ animationDelay: `${delay}ms` }}>
       {children}
-    </section>
+    </Tag>
   )
 }
 
-function Pill({ children }) {
+/* Visual de producto generado (no placeholder): mini-panel de lawkit */
+function ProductoVisual() {
+  const dias = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
+  const eventos = { 3: 'audiencia', 8: 'gestion', 9: 'gestion', 16: 'reunion', 22: 'plazo' }
+  const dot = {
+    audiencia: 'bg-red-400', gestion: 'bg-primary',
+    reunion: 'bg-sky-400', plazo: 'bg-amber-400',
+  }
   return (
-    <span className="inline-block text-xs font-semibold tracking-wide uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
-      {children}
-    </span>
+    <div className="relative">
+      <div className="absolute -inset-6 bg-primary/5 rounded-[2rem] -z-10" />
+      <div className="bg-white rounded-2xl border border-zinc-200/80 shadow-xl shadow-primary/5 p-5 rotate-1">
+        <div className="flex items-center gap-1.5 mb-5">
+          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
+          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
+          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200" />
+          <span className="ml-3 text-[11px] font-medium text-muted">Agenda · esta semana</span>
+        </div>
+        <div className="grid grid-cols-7 gap-1.5">
+          {dias.map((d, i) => (
+            <div key={i} className="text-center text-[10px] font-semibold text-muted pb-1">{d}</div>
+          ))}
+          {Array.from({ length: 28 }, (_, i) => {
+            const n = i + 1
+            const ev = eventos[n]
+            const hoy = n === 9
+            return (
+              <div key={n} className={`aspect-square rounded-md flex flex-col items-center justify-center text-[10px] ${
+                hoy ? 'bg-primary text-white font-semibold' : 'bg-soft text-carbon/70'
+              }`}>
+                {n}
+                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-white' : dot[ev]}`} />}
+              </div>
+            )
+          })}
+        </div>
+        <div className="mt-5 pt-4 border-t border-zinc-100">
+          <div className="flex items-center justify-between text-[11px] mb-1.5">
+            <span className="font-medium text-carbon">Honorarios · 4 de 6 cuotas</span>
+            <span className="text-muted">66%</span>
+          </div>
+          <div className="h-2 rounded-full bg-soft overflow-hidden">
+            <div className="h-full rounded-full bg-primary" style={{ width: '66%' }} />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
+
+/* ----------------------------------------------------------------- */
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-bone text-carbon">
+    <div className="min-h-screen bg-bone text-carbon antialiased">
 
       {/* NAV */}
-      <header className="sticky top-0 z-30 bg-bone/80 backdrop-blur border-b border-zinc-200">
+      <header className="sticky top-0 z-40 bg-bone/85 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
           <Logo size="md" />
-          <nav className="hidden sm:flex items-center gap-7 text-sm font-medium text-muted">
+          <nav className="hidden sm:flex items-center gap-8 text-sm text-muted">
             <a href="#producto" className="hover:text-carbon transition-colors">Producto</a>
-            <a href="#como-funciona" className="hover:text-carbon transition-colors">Cómo funciona</a>
+            <a href="#flujo" className="hover:text-carbon transition-colors">Cómo funciona</a>
             <a href="#vision" className="hover:text-carbon transition-colors">Visión</a>
-            <a href="#contacto" className="hover:text-carbon transition-colors">Contacto</a>
           </nav>
           <Link
             to="/login"
-            className="text-sm font-medium text-carbon border border-zinc-300 px-4 py-2 rounded-lg hover:bg-soft transition-colors"
+            className="text-sm font-medium text-carbon hover:text-primary transition-colors"
           >
             Acceso clientes
           </Link>
         </div>
       </header>
 
-      {/* HERO */}
-      <Seccion className="pt-20 pb-24 text-center">
-        <Pill>Software de gestión jurídica</Pill>
-        <h1 className="mt-6 text-4xl sm:text-6xl font-bold tracking-tight leading-[1.1]">
-          El estudio jurídico,<br className="hidden sm:block" />
-          <span className="text-primary"> ordenado en un solo lugar.</span>
-        </h1>
-        <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-          lawkit es la plataforma de gestión para abogados independientes y estudios
-          jurídicos: clientes, presupuestos, cobros en cuotas, portal del cliente y
-          agenda — simple, accesible y todo en un solo lugar.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="#producto"
-            className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-          >
-            Conoce el producto
-          </a>
-          <a
-            href="#contacto"
-            className="border border-zinc-300 text-carbon px-6 py-3 rounded-lg font-semibold hover:bg-soft transition-colors"
-          >
-            Contáctanos
-          </a>
+      {/* HERO — asimétrico, izquierda, display grande */}
+      <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-28 sm:pt-28 sm:pb-36">
+        <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
+          <div className="lg:col-span-7">
+            <Rise as="p" className="text-sm font-medium text-primary tracking-wide">
+              Software de gestión jurídica
+            </Rise>
+            <Rise as="h1" delay={80}
+              className="mt-5 font-display font-extrabold tracking-tight text-carbon text-5xl sm:text-7xl leading-[1.02]">
+              El estudio jurídico,
+              <br />
+              <span className="text-primary">ordenado de verdad.</span>
+            </Rise>
+            <Rise as="p" delay={160}
+              className="mt-7 text-lg text-muted leading-relaxed max-w-xl">
+              lawkit reúne clientes, presupuestos, cobros en cuotas, portal del
+              cliente y agenda en un solo lugar. Sin planillas, sin procesos
+              manuales, sin curva de aprendizaje.
+            </Rise>
+            <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
+              <a href="#producto"
+                className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+                Conoce el producto
+              </a>
+              <a href="#contacto"
+                className="px-6 py-3 rounded-lg font-semibold text-carbon hover:bg-soft transition-colors">
+                Contáctanos
+              </a>
+            </Rise>
+          </div>
+          <Rise delay={320} className="lg:col-span-5">
+            <ProductoVisual />
+          </Rise>
         </div>
-      </Seccion>
+      </section>
 
-      {/* PROBLEMA */}
-      <div className="bg-soft py-20">
-        <Seccion>
-          <div className="max-w-3xl">
-            <Pill>El problema</Pill>
-            <h2 className="mt-5 text-3xl font-bold tracking-tight">
-              El abogado independiente pierde tiempo y plata en tareas administrativas.
+      {/* PROBLEMA — declaración + lista numerada, sin tarjetas */}
+      <section className="bg-carbon text-white">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
+          <div className="grid lg:grid-cols-12 gap-12">
+            <h2 className="lg:col-span-5 font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+              El abogado independiente pierde tiempo y dinero en administración.
             </h2>
+            <ol className="lg:col-span-7 lg:pt-2">
+              {PROBLEMAS.map((p, i) => (
+                <li key={i} className="flex gap-5 py-5 border-b border-white/10 last:border-0">
+                  <span className="font-display text-sm text-primary/90 tabular-nums pt-1">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <p className="text-lg text-zinc-300 leading-relaxed">{p}</p>
+                </li>
+              ))}
+            </ol>
           </div>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {PROBLEMAS.map((p, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white rounded-xl p-5 border border-zinc-100">
-                <span className="text-primary text-xl leading-none mt-0.5">›</span>
-                <p className="text-sm text-zinc-700 leading-relaxed">{p}</p>
-              </div>
-            ))}
-          </div>
-        </Seccion>
-      </div>
-
-      {/* PRODUCTO / MÓDULOS */}
-      <Seccion id="producto" className="py-20">
-        <div className="text-center max-w-2xl mx-auto">
-          <Pill>La solución</Pill>
-          <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
-            Una sola plataforma para todo el ciclo del cliente
-          </h2>
-          <p className="mt-4 text-muted">
-            Desde el primer presupuesto hasta la gestión completa del caso, sin Excel
-            ni procesos manuales.
-          </p>
         </div>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {MODULOS.map((m) => (
-            <div key={m.titulo} className="bg-white rounded-2xl p-6 border border-zinc-100 hover:border-primary/40 transition-colors">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={m.icon} />
-                </svg>
-              </div>
-              <h3 className="mt-4 font-semibold text-carbon">{m.titulo}</h3>
-              <p className="mt-2 text-sm text-muted leading-relaxed">{m.desc}</p>
-            </div>
-          ))}
-        </div>
-      </Seccion>
+      </section>
 
-      {/* CÓMO FUNCIONA */}
-      <div id="como-funciona" className="bg-carbon text-white py-20">
-        <Seccion>
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="inline-block text-xs font-semibold tracking-wide uppercase text-primary bg-primary/15 px-3 py-1 rounded-full">
-              Cómo funciona
-            </span>
-            <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
-              Del presupuesto al cliente activo, automático
+      {/* PRODUCTO — lista editorial, sin grilla de cards idénticas */}
+      <section id="producto" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+              Una plataforma para todo el ciclo del cliente
             </h2>
-          </div>
-          <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            {FLUJO.map(([titulo, desc], i) => (
-              <div key={titulo} className="relative">
-                <div className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center">
-                  {i + 1}
-                </div>
-                <h3 className="mt-4 font-semibold">{titulo}</h3>
-                <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </Seccion>
-      </div>
-
-      {/* DIFERENCIADORES */}
-      <Seccion className="py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <Pill>Por qué lawkit</Pill>
-            <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
-              Diseñado para quien la competencia ignora
-            </h2>
-            <p className="mt-4 text-muted leading-relaxed">
-              Los sistemas existentes son caros y complejos. lawkit nace para el
-              abogado independiente y los estudios jurídicos que necesitan ordenarse
-              sin fricción.
+            <p className="mt-5 text-muted leading-relaxed">
+              Desde el primer presupuesto hasta la gestión completa del caso.
+              Cada pieza conectada con la siguiente.
             </p>
           </div>
-          <ul className="space-y-3">
+          <div className="lg:col-span-8">
+            {MODULOS.map(([t, d], i) => (
+              <div key={t}
+                className="grid sm:grid-cols-12 gap-2 sm:gap-6 py-7 border-t border-zinc-200 first:border-0 first:pt-0">
+                <div className="sm:col-span-5 flex items-baseline gap-4">
+                  <span className="font-display text-sm text-primary tabular-nums">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="font-display font-semibold text-xl text-carbon">{t}</h3>
+                </div>
+                <p className="sm:col-span-7 text-muted leading-relaxed">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FLUJO — sección morada committed (color = voz) */}
+      <section id="flujo" className="bg-primary text-white">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
+          <h2 className="font-display font-bold tracking-tight text-3xl sm:text-5xl leading-tight max-w-2xl">
+            Del presupuesto al cliente activo, automático.
+          </h2>
+          <div className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
+            {FLUJO.map(([t, d], i) => (
+              <div key={t}>
+                <div className="font-display text-2xl font-bold text-white/40">
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h3 className="mt-3 font-display font-semibold text-lg">{t}</h3>
+                <p className="mt-2 text-sm text-white/75 leading-relaxed">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* DIFERENCIADORES */}
+      <section className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="lg:col-span-5">
+            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+              Diseñado para quien la competencia ignora
+            </h2>
+            <p className="mt-5 text-muted leading-relaxed">
+              Los sistemas existentes son caros y complejos. lawkit nace para el
+              abogado independiente y los estudios que necesitan ordenarse sin
+              fricción.
+            </p>
+          </div>
+          <ul className="lg:col-span-7">
             {DIFERENCIADORES.map((d, i) => (
-              <li key={i} className="flex items-start gap-3 bg-white rounded-xl p-4 border border-zinc-100">
-                <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <li key={i} className="flex gap-5 py-6 border-b border-zinc-200 last:border-0">
+                <svg className="w-5 h-5 text-primary flex-shrink-0 mt-1" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-sm text-zinc-700 leading-relaxed">{d}</span>
+                <span className="text-lg text-carbon/90 leading-relaxed">{d}</span>
               </li>
             ))}
           </ul>
         </div>
-      </Seccion>
+      </section>
 
-      {/* MODELO DE NEGOCIO */}
-      <div className="bg-soft py-20">
-        <Seccion>
-          <div className="text-center max-w-2xl mx-auto">
-            <Pill>Modelo de negocio</Pill>
-            <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
-              Suscripción mensual accesible
+      {/* MODELO DE NEGOCIO — sin precios, sin tarjetas idénticas */}
+      <section className="bg-soft">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
+          <div className="max-w-2xl">
+            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+              Suscripción mensual, sin instalaciones
             </h2>
-            <p className="mt-4 text-muted">
-              Software como servicio (SaaS), con planes según el tamaño del estudio.
-              Sin instalaciones, sin contratos largos.
+            <p className="mt-5 text-muted leading-relaxed">
+              Software como servicio, con planes según el tamaño del estudio.
+              Los valores se definen al cierre del desarrollo en curso.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {[
-              ['Plan Solo', 'Para el abogado independiente que trabaja por su cuenta.'],
-              ['Plan Estudio', 'Para estudios jurídicos con un equipo de abogados.'],
-              ['Plan Pro', 'Para estudios con varios abogados y mayor volumen de casos.'],
-            ].map(([t, d]) => (
-              <div key={t} className="bg-white rounded-2xl p-7 border border-zinc-100 text-center">
-                <h3 className="font-semibold text-carbon text-lg">{t}</h3>
+          <div className="mt-14 grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 border-y border-zinc-200">
+            {PLANES.map(([t, d]) => (
+              <div key={t} className="px-0 sm:px-8 py-8 first:pl-0 last:pr-0">
+                <h3 className="font-display font-semibold text-xl text-carbon">Plan {t}</h3>
                 <p className="mt-3 text-sm text-muted leading-relaxed">{d}</p>
-                <p className="mt-5 text-xs font-medium text-primary uppercase tracking-wide">
-                  Disponible próximamente
-                </p>
+                <p className="mt-6 text-xs font-medium text-primary">Disponible próximamente</p>
               </div>
             ))}
           </div>
-        </Seccion>
-      </div>
+        </div>
+      </section>
 
       {/* VISIÓN */}
-      <Seccion id="vision" className="py-20">
-        <div className="max-w-3xl">
-          <Pill>Visión de producto</Pill>
-          <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
-            Hacia el estudio jurídico totalmente digital
-          </h2>
-          <p className="mt-4 text-muted leading-relaxed">
-            lawkit está en desarrollo activo. El núcleo de gestión ya está operativo y
-            la hoja de ruta avanza hacia la automatización completa del trabajo legal:
-          </p>
-        </div>
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {VISION.map((v, i) => (
-            <div key={i} className="flex items-start gap-3 bg-white rounded-xl p-5 border border-zinc-100">
-              <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
-                {i + 1}
-              </span>
-              <p className="text-sm text-zinc-700 leading-relaxed">{v}</p>
-            </div>
-          ))}
-        </div>
-      </Seccion>
-
-      {/* CTA / CONTACTO */}
-      <div id="contacto" className="bg-carbon text-white">
-        <Seccion className="py-20 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            ¿Quieres saber más sobre lawkit?
-          </h2>
-          <p className="mt-4 text-zinc-400 max-w-xl mx-auto">
-            Estamos construyendo el software de gestión que el abogado
-            necesita. Conversemos.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="mailto:contacto@lawkit.cl"
-              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-            >
-              contacto@lawkit.cl
-            </a>
+      <section id="vision" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+              Hacia el estudio totalmente digital
+            </h2>
+            <p className="mt-5 text-muted leading-relaxed">
+              El núcleo de gestión ya opera. La hoja de ruta avanza hacia la
+              automatización completa del trabajo legal.
+            </p>
           </div>
-        </Seccion>
-      </div>
+          <ol className="lg:col-span-8">
+            {VISION.map((v, i) => (
+              <li key={i} className="flex gap-5 py-6 border-b border-zinc-200 last:border-0">
+                <span className="font-display text-sm text-primary tabular-nums pt-1">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="text-lg text-carbon/90 leading-relaxed">{v}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* CONTACTO */}
+      <section id="contacto" className="bg-carbon text-white">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
+          <h2 className="font-display font-bold tracking-tight text-4xl sm:text-6xl leading-[1.05] max-w-3xl">
+            ¿Conversamos sobre lawkit?
+          </h2>
+          <p className="mt-6 text-lg text-zinc-400 max-w-xl leading-relaxed">
+            Estamos construyendo el software de gestión que el abogado necesita.
+          </p>
+          <a href="mailto:contacto@lawkit.cl"
+            className="mt-10 inline-block bg-primary text-white px-7 py-3.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+            contacto@lawkit.cl
+          </a>
+        </div>
+      </section>
 
       {/* FOOTER */}
       <footer className="bg-carbon border-t border-white/10">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Logo light size="sm" />
           <p className="text-xs text-zinc-500">
-            © {new Date().getFullYear()} lawkit — Software de gestión jurídica
+            © {new Date().getFullYear()} lawkit. Software de gestión jurídica.
           </p>
         </div>
       </footer>

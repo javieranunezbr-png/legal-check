@@ -10,13 +10,15 @@ export default {
           light:   '#A78BFA',
           dark:    '#7C3AED',
         },
-        carbon:  '#0A0A0A',    // negro carbón — sidebar, textos
-        bone:    '#FAFAFA',    // blanco hueso — fondos
-        soft:    '#F4F4F5',    // gris suave — fondos secundarios, hover
-        muted:   '#71717A',    // gris texto — textos secundarios
+        // Neutros tintados hacia el hue de marca (impeccable: nada de #000/#fff puro)
+        carbon:  '#0B0A0F',    // casi-negro violeta — superficies oscuras, textos
+        bone:    '#FBFAFC',    // blanco-hueso tintado — fondos
+        soft:    '#F4F3F7',    // gris suave tintado — fondos secundarios, hover
+        muted:   '#6F6D7B',    // gris-violeta — texto secundario
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Schibsted Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

@@ -6,3 +6,6 @@ node_modules/
 **/.DS_Store
 .claude/
 **/.claude/
+
+# Build output (Netlify lo genera)
+frontend/dist/
