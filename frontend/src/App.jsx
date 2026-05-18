@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { PrivateRoute, AdminRoute } from './routes/PrivateRoute'
 import Layout          from './components/layout/Layout'
 import Login           from './pages/Login'
+import Landing         from './pages/Landing'
 import Dashboard       from './pages/Dashboard'
 import ClientesLista   from './pages/clientes/ClientesLista'
 import ClienteForm     from './pages/clientes/ClienteForm'
@@ -25,6 +26,7 @@ export default function App() {
   return (
     <Routes>
       {/* Públicas */}
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/presupuesto/:token" element={<PresupuestoPublico />} />
       <Route path="/ingreso/:token"     element={<PortalCliente />} />
@@ -73,8 +75,7 @@ export default function App() {
         </Route>
       </Route>
 
-      <Route path="/"  element={<Navigate to="/dashboard" replace />} />
-      <Route path="*"  element={<Navigate to="/dashboard" replace />} />
+      <Route path="*"  element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
