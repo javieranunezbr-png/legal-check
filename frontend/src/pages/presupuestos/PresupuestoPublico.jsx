@@ -219,7 +219,7 @@ export default function PresupuestoPublico() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} lawkit — Chile
+          © {new Date().getFullYear()} lawkit
         </p>
       </div>
     </div>

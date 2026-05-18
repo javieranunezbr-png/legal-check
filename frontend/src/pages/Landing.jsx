@@ -7,7 +7,7 @@ const PROBLEMAS = [
   'Manejan a sus clientes en planillas Excel o "en la cabeza".',
   'Cobran las cuotas de honorarios de forma manual por correo y WhatsApp.',
   'No tienen visibilidad de qué gestiones o audiencias están pendientes.',
-  'El software jurídico que existe es caro, complejo y pensado para grandes estudios.',
+  'El software jurídico que existe es caro, complejo y poco intuitivo.',
 ]
 
 const MODULOS = [
@@ -52,10 +52,10 @@ const FLUJO = [
 ]
 
 const DIFERENCIADORES = [
-  'Todo en un solo lugar: nadie lo ofrece integrado para el abogado independiente.',
-  'Precio accesible, pensado para el abogado solo y el estudio pequeño.',
-  'Hecho en Chile, para la realidad y los procesos chilenos.',
+  'Todo en un solo lugar: gestión, cobros, presupuestos y agenda integrados.',
+  'Precio accesible, pensado para abogados independientes y estudios jurídicos.',
   'Presupuestos con aceptación online y portal del cliente integrados.',
+  'Flujo automático del presupuesto al cliente activo, sin pasos manuales.',
   'Fácil de usar: cualquier abogado lo opera sin capacitación.',
 ]
 
@@ -110,15 +110,15 @@ export default function Landing() {
 
       {/* HERO */}
       <Seccion className="pt-20 pb-24 text-center">
-        <Pill>Software jurídico chileno</Pill>
+        <Pill>Software de gestión jurídica</Pill>
         <h1 className="mt-6 text-4xl sm:text-6xl font-bold tracking-tight leading-[1.1]">
           El estudio jurídico,<br className="hidden sm:block" />
           <span className="text-primary"> ordenado en un solo lugar.</span>
         </h1>
         <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
           lawkit es la plataforma de gestión para abogados independientes y estudios
-          pequeños en Chile: clientes, presupuestos, cobros en cuotas, portal del
-          cliente y agenda — simple, accesible y hecho para la realidad chilena.
+          jurídicos: clientes, presupuestos, cobros en cuotas, portal del cliente y
+          agenda — simple, accesible y todo en un solo lugar.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <a
@@ -217,8 +217,9 @@ export default function Landing() {
               Diseñado para quien la competencia ignora
             </h2>
             <p className="mt-4 text-muted leading-relaxed">
-              Los sistemas existentes son caros y complejos, pensados para grandes
-              estudios. lawkit nace para el abogado solo y el estudio pequeño chileno.
+              Los sistemas existentes son caros y complejos. lawkit nace para el
+              abogado independiente y los estudios jurídicos que necesitan ordenarse
+              sin fricción.
             </p>
           </div>
           <ul className="space-y-3">
@@ -250,8 +251,8 @@ export default function Landing() {
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
               ['Plan Solo', 'Para el abogado independiente que trabaja por su cuenta.'],
-              ['Plan Estudio', 'Para estudios pequeños de 2 a 5 abogados.'],
-              ['Plan Pro', 'Para estudios medianos con varios abogados y mayor volumen.'],
+              ['Plan Estudio', 'Para estudios jurídicos con un equipo de abogados.'],
+              ['Plan Pro', 'Para estudios con varios abogados y mayor volumen de casos.'],
             ].map(([t, d]) => (
               <div key={t} className="bg-white rounded-2xl p-7 border border-zinc-100 text-center">
                 <h3 className="font-semibold text-carbon text-lg">{t}</h3>
@@ -296,7 +297,7 @@ export default function Landing() {
             ¿Quieres saber más sobre lawkit?
           </h2>
           <p className="mt-4 text-zinc-400 max-w-xl mx-auto">
-            Estamos construyendo el software de gestión que el abogado chileno
+            Estamos construyendo el software de gestión que el abogado
             necesita. Conversemos.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -315,7 +316,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Logo light size="sm" />
           <p className="text-xs text-zinc-500">
-            © {new Date().getFullYear()} lawkit — Software jurídico hecho en Chile
+            © {new Date().getFullYear()} lawkit — Software de gestión jurídica
           </p>
         </div>
       </footer>

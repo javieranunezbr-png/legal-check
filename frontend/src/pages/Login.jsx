@@ -118,7 +118,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-muted mt-6">
-          © {new Date().getFullYear()} lawkit — Chile
+          © {new Date().getFullYear()} lawkit
         </p>
       </div>
     </div>
