@@ -13,6 +13,7 @@ const presupuestosRoutes = require('./modules/presupuestos/presupuestos.routes')
 const gestionesRoutes    = require('./modules/gestiones/gestiones.routes');
 const portalRoutes       = require('./modules/portal/portal.routes');
 const configRoutes       = require('./modules/configuracion/configuracion.routes');
+const agendaRoutes       = require('./modules/agenda/agenda.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -31,6 +32,7 @@ app.use('/api/dashboard',    dashboardRoutes);
 app.use('/api/presupuestos', presupuestosRoutes);
 app.use('/api/gestiones',    gestionesRoutes);
 app.use('/api/portal',       portalRoutes);
+app.use('/api/agenda',       agendaRoutes);
 app.use('/api/configuracion', configRoutes);
 
 // Health check

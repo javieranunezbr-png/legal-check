@@ -11,13 +11,14 @@ async function resumen({ rol, usuarioId }) {
     cuotasVencidas,
     causasActivas,
     cobrosMes,
+    gestionesSemana,
   ] = await Promise.all([
 
     // 1. Total clientes activos
     pool.query(
       `SELECT COUNT(*) AS total
        FROM clientes
-       WHERE estado = 'vigente' ${filtroCliente}`,
+       WHERE estado IN ('vigente','activo') ${filtroCliente}`,
       params
     ),
 
@@ -63,6 +64,22 @@ async function resumen({ rol, usuarioId }) {
        WHERE 1=1 ${esAdmin ? '' : 'AND ca.abogado_id = $1'}`,
       params
     ),
+
+    // 5. Gestiones / eventos pendientes de la agenda en los próximos 7 días
+    pool.query(
+      `SELECT e.id, e.titulo, e.tipo, e.fecha,
+              c.titulo AS causa_titulo,
+              cl.nombre AS cliente_nombre, cl.apellidos AS cliente_apellidos
+       FROM agenda_eventos e
+       LEFT JOIN causas   c  ON c.id  = e.causa_id
+       LEFT JOIN clientes cl ON cl.id = c.cliente_id
+       WHERE e.estado = 'pendiente'
+         AND e.fecha >= CURRENT_DATE
+         AND e.fecha <= CURRENT_DATE + INTERVAL '7 days'
+         ${esAdmin ? '' : 'AND e.abogado_id = $1'}
+       ORDER BY e.fecha ASC`,
+      params
+    ),
   ]);
 
   return {
@@ -76,6 +93,7 @@ async function resumen({ rol, usuarioId }) {
       cobrado:  parseFloat(cobrosMes.rows[0].cobrado_mes),
       esperado: parseFloat(cobrosMes.rows[0].esperado_mes),
     },
+    gestiones_semana: gestionesSemana.rows,
   };
 }
 

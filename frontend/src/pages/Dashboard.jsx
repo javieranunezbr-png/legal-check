@@ -63,7 +63,17 @@ export default function Dashboard() {
   }
 
   const { clientes_activos, cuotas_vencidas, causas_con_vencimiento_proximo, cobros_mes } = datos
+  const gestionesSemana = datos.gestiones_semana ?? []
   const porcentajeCobrado = pct(cobros_mes.cobrado, cobros_mes.esperado)
+
+  const TIPO_DOT = {
+    audiencia: 'bg-red-500', gestion: 'bg-violet-500',
+    reunion: 'bg-blue-500', plazo: 'bg-amber-500', otro: 'bg-zinc-400',
+  }
+  const fechaCorta = (iso) =>
+    new Date(iso).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short' })
+  const horaDe = (iso) =>
+    new Date(iso).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })
 
   return (
     <div className="space-y-6">
@@ -146,6 +156,44 @@ export default function Dashboard() {
           <span>Cobrado: {clp(cobros_mes.cobrado)}</span>
           <span>Esperado: {clp(cobros_mes.esperado)}</span>
         </div>
+      </div>
+
+      {/* Gestiones / eventos de la semana */}
+      <div className="card p-0 overflow-hidden">
+        <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-carbon">
+            Agenda — próximos 7 días
+          </h2>
+          <a href="/agenda" className="text-xs font-medium text-primary hover:underline">
+            Ver agenda completa →
+          </a>
+        </div>
+        {gestionesSemana.length === 0 ? (
+          <p className="px-6 py-6 text-sm text-muted">
+            No tienes gestiones ni audiencias agendadas para esta semana.
+          </p>
+        ) : (
+          <ul className="divide-y divide-zinc-100">
+            {gestionesSemana.map((g) => (
+              <li key={g.id} className="px-6 py-3 flex items-center gap-3 hover:bg-soft transition-colors">
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${TIPO_DOT[g.tipo] || TIPO_DOT.otro}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-carbon truncate">{g.titulo}</p>
+                  {(g.causa_titulo || g.cliente_nombre) && (
+                    <p className="text-xs text-muted truncate">
+                      {g.causa_titulo}
+                      {g.cliente_nombre ? ` · ${g.cliente_nombre} ${g.cliente_apellidos || ''}` : ''}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-sm font-medium text-carbon capitalize">{fechaCorta(g.fecha)}</p>
+                  <p className="text-xs text-muted">{horaDe(g.fecha)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Tabla de causas con vencimiento próximo */}

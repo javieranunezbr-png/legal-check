@@ -19,6 +19,7 @@ import PresupuestoPublico from './pages/presupuestos/PresupuestoPublico'
 import GestionesCatalogo  from './pages/presupuestos/GestionesCatalogo'
 import PortalCliente      from './pages/portal/PortalCliente'
 import ConfiguracionEstudio from './pages/configuracion/ConfiguracionEstudio'
+import Agenda             from './pages/agenda/Agenda'
 
 export default function App() {
   return (
@@ -45,6 +46,9 @@ export default function App() {
           <Route path="/causas"              element={<CausasLista />} />
           <Route path="/causas/nueva"        element={<CausaForm />} />
           <Route path="/causas/:id/editar"   element={<CausaForm />} />
+
+          {/* Agenda */}
+          <Route path="/agenda"              element={<Agenda />} />
 
           {/* Presupuestos */}
           <Route path="/presupuestos"             element={<PresupuestosLista />} />
