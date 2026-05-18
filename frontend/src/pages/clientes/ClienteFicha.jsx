@@ -128,6 +128,47 @@ export default function ClienteFicha() {
         )}
       </div>
 
+      {/* Documentos automáticos */}
+      <div className="card space-y-4">
+        <div className="border-b border-slate-100 pb-2">
+          <h2 className="text-sm font-semibold text-slate-700">Documentos</h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Generados automáticamente con los datos de la ficha. Revísalos y
+            completa lo que falte antes de firmar.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            to={`/clientes/${id}/documento/mandato`}
+            className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary hover:bg-soft transition-colors group"
+          >
+            <span className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Mandato judicial</p>
+              <p className="text-xs text-slate-400 group-hover:text-primary transition-colors">Generar y descargar PDF</p>
+            </div>
+          </Link>
+          <Link
+            to={`/clientes/${id}/documento/contrato`}
+            className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-primary hover:bg-soft transition-colors group"
+          >
+            <span className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Contrato de servicios</p>
+              <p className="text-xs text-slate-400 group-hover:text-primary transition-colors">Generar y descargar PDF</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
       {/* Datos del cónyuge */}
       {tieneConyuge && (
         <div className="card space-y-4">

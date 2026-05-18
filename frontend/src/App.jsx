@@ -21,6 +21,7 @@ import GestionesCatalogo  from './pages/presupuestos/GestionesCatalogo'
 import PortalCliente      from './pages/portal/PortalCliente'
 import ConfiguracionEstudio from './pages/configuracion/ConfiguracionEstudio'
 import Agenda             from './pages/agenda/Agenda'
+import DocumentoView      from './pages/clientes/DocumentoView'
 
 export default function App() {
   return (
@@ -33,6 +34,10 @@ export default function App() {
 
       {/* Privadas */}
       <Route element={<PrivateRoute />}>
+
+        {/* Documento imprimible — full screen, sin sidebar */}
+        <Route path="/clientes/:id/documento/:tipo" element={<DocumentoView />} />
+
         <Route element={<Layout />}>
 
           {/* Dashboard */}
