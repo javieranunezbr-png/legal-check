@@ -3,14 +3,14 @@
 //   rojo   → alertas, pendientes que requieren acción, vencidos, rechazos
 //   ámbar  → suspendidos / pausados
 //   gris   → neutros / cerrados / archivados
-//   pino   → estados "informativos en curso" (enviado, derivado) — color de marca
+//   verdemar → estados "informativos en curso" (enviado, derivado)
 const config = {
   // Clientes
   vigente:     'bg-emerald-100 text-emerald-700',
   activo:      'bg-emerald-100 text-emerald-700',
   pendiente:   'bg-red-100     text-red-700',
   terminado:   'bg-zinc-100    text-zinc-500',
-  derivado:    'bg-primary/10  text-primary',
+  derivado:    'bg-teal-soft   text-teal',
 
   // Causas
   activa:      'bg-emerald-100 text-emerald-700',
@@ -31,7 +31,7 @@ const config = {
 
   // Presupuestos
   borrador:    'bg-zinc-100    text-zinc-600',
-  enviado:     'bg-primary/10  text-primary',
+  enviado:     'bg-teal-soft   text-teal',
   aceptado:    'bg-emerald-100 text-emerald-700',
   rechazado:   'bg-red-100     text-red-700',
 }

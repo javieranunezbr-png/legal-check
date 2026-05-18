@@ -1,7 +1,7 @@
 /**
- * Logo oficial lawkit — dirección "Estudio sereno".
- * Wordmark "lawkit" en serif humanista (Spectral), minúsculas, sereno,
- * con un punto pino al final como sello discreto. Sin símbolo.
+ * Logo oficial lawkit — dirección "Grafito + mandarina".
+ * Wordmark "lawkit" en Figtree (grotesca), minúsculas, con un punto
+ * mandarina al final como sello. Sin símbolo.
  *
  * Props:
  *  - light: texto en papel para fondos oscuros (default: tinta).
@@ -17,7 +17,7 @@ export default function Logo({ light = false, size = 'md', className = '' }) {
   const s = sizes[size] || sizes.md
 
   return (
-    <span className={`inline-flex items-end leading-none font-display font-semibold ${className}`}>
+    <span className={`inline-flex items-end leading-none font-display font-extrabold tracking-[-0.02em] ${className}`}>
       <span className={`${s.text} ${light ? 'text-bone' : 'text-carbon'}`}>
         lawkit
       </span>

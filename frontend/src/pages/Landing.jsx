@@ -5,34 +5,34 @@ import Logo from '../components/ui/Logo'
 /* Datos                                                              */
 
 const PROBLEMAS = [
-  'Gestionan a sus clientes en planillas o de memoria.',
-  'Cobran las cuotas de honorarios a mano, por correo y WhatsApp.',
-  'No tienen visibilidad de qué gestiones o audiencias vienen.',
-  'El software jurídico que existe es caro, complejo y poco intuitivo.',
+  'Pierdes horas en Excel y WhatsApp en vez de ejercer.',
+  'Persigues las cuotas de honorarios una por una, a mano.',
+  'Te enteras tarde de una audiencia o un plazo que ya venció.',
+  'El software legal que existe es caro, pesado y nadie lo entiende.',
 ]
 
 const MODULOS = [
-  ['Clientes y causas', 'Ficha completa de cada cliente, sus causas y documentos, con búsqueda inmediata.'],
-  ['Presupuestos con aceptación online', 'El abogado lo envía por correo o WhatsApp. El prospecto acepta desde un link, sin instalar nada.'],
-  ['Cobros en cuotas', 'Al aceptar el presupuesto se genera el acuerdo y todas las cuotas. Pagado, pendiente y vencido, con alertas.'],
-  ['Portal del cliente', 'Tras el primer pago el cliente completa sus datos en un formulario seguro y queda activo.'],
-  ['Agenda y plazos', 'Audiencias, gestiones y vencimientos por abogado, con aviso de lo que corre esta semana.'],
-  ['Identidad del estudio', 'La comunicación con el cliente se personaliza y mantiene la imagen del estudio.'],
+  ['Clientes y causas', 'Cada cliente, sus causas y documentos en una ficha. Encuentras lo que buscas en segundos, no revolviendo carpetas.'],
+  ['Presupuestos que se aceptan solos', 'Envías el presupuesto por correo o WhatsApp y el prospecto lo acepta desde un link. Cierras antes y sin fricción.'],
+  ['Cobra sin perseguir a nadie', 'Al aceptar el presupuesto se generan todas las cuotas. Ves qué está pagado, pendiente o vencido, con alertas automáticas.'],
+  ['Portal del cliente', 'Tras el primer pago el cliente completa sus datos solo. Tú recibes la ficha lista, sin pedirla tres veces.'],
+  ['Nunca más un plazo perdido', 'Audiencias, gestiones y vencimientos en una agenda que te avisa lo que corre esta semana.'],
+  ['Con la cara de tu estudio', 'Los correos y el portal salen con tu identidad. El cliente ve a tu estudio, profesional y serio.'],
 ]
 
 const FLUJO = [
-  ['Presupuesto', 'El abogado lo crea y lo envía por correo o WhatsApp.'],
-  ['Aceptación', 'El prospecto lo acepta desde un link público, sin registrarse.'],
-  ['Cobro', 'Se genera el acuerdo de honorarios y todas sus cuotas.'],
-  ['Portal', 'Tras el primer pago el cliente completa su ficha y queda activo.'],
-  ['Gestión', 'Causas, cobros y agenda administrados desde un solo panel.'],
+  ['Presupuesto', 'Lo creas y lo envías por correo o WhatsApp en un minuto.'],
+  ['Aceptación', 'El prospecto lo acepta desde un link, sin registrarse.'],
+  ['Cobro', 'Se generan el acuerdo y todas las cuotas automáticamente.'],
+  ['Portal', 'Con el primer pago, el cliente completa su ficha y queda activo.'],
+  ['Gestión', 'Causas, cobros y agenda, todo desde un solo panel.'],
 ]
 
 const DIFERENCIADORES = [
-  'Todo el ciclo del cliente integrado: gestión, presupuestos, cobros y agenda.',
-  'Precio accesible, pensado para abogados independientes y estudios jurídicos.',
-  'Del presupuesto al cliente activo de forma automática, sin pasos manuales.',
-  'Fácil: cualquier abogado lo opera el primer día, sin capacitación.',
+  'Todo el ciclo del cliente en un solo lugar, no cinco herramientas sueltas.',
+  'Del presupuesto al cliente activo en automático, sin pasos manuales.',
+  'Precio accesible, pensado para el abogado independiente, no para el corporativo.',
+  'Lo usas el primer día, sin manuales ni capacitación.',
 ]
 
 const VISION = [
@@ -138,28 +138,28 @@ export default function Landing() {
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-28 sm:pt-28 sm:pb-36">
         <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
           <div className="lg:col-span-7">
-            <Rise as="p" className="text-sm font-medium text-primary tracking-wide">
-              Software de gestión jurídica
+            <Rise as="p" className="text-sm font-semibold text-primary tracking-wide">
+              Software de gestión para abogados
             </Rise>
             <Rise as="h1" delay={80}
-              className="mt-5 font-display font-semibold tracking-[-0.015em] text-carbon text-5xl sm:text-7xl leading-[1.02]">
-              El estudio jurídico,
+              className="mt-5 font-display font-extrabold tracking-[-0.02em] text-carbon text-5xl sm:text-7xl leading-[1.0]">
+              Menos papeleo.
               <br />
-              <span className="text-primary">ordenado de verdad.</span>
+              <span className="text-primary">Más abogacía.</span>
             </Rise>
             <Rise as="p" delay={160}
-              className="mt-7 text-lg text-muted leading-relaxed max-w-xl">
-              lawkit reúne clientes, presupuestos, cobros en cuotas, portal del
-              cliente y agenda en un solo lugar. Sin planillas, sin procesos
-              manuales, sin curva de aprendizaje.
+              className="mt-7 text-lg text-ink2 leading-relaxed max-w-xl">
+              Clientes, presupuestos, cobros en cuotas y agenda en un solo
+              lugar. Cierra presupuestos más rápido, cobra a tiempo y no
+              vuelvas a perder un plazo. Deja la planilla atrás.
             </Rise>
             <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
-              <a href="#producto"
+              <a href="#flujo"
                 className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
-                Conoce el producto
+                Ver cómo funciona
               </a>
               <a href="#contacto"
-                className="px-6 py-3 rounded-lg font-semibold text-carbon hover:bg-soft transition-colors">
+                className="px-6 py-3 rounded-lg font-semibold text-teal hover:bg-soft transition-colors">
                 Contáctanos
               </a>
             </Rise>
@@ -174,7 +174,7 @@ export default function Landing() {
       <section className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
           <div className="grid lg:grid-cols-12 gap-12">
-            <h2 className="lg:col-span-5 font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
+            <h2 className="lg:col-span-5 font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               El abogado independiente pierde tiempo y dinero en administración.
             </h2>
             <ol className="lg:col-span-7 lg:pt-2">
@@ -195,7 +195,7 @@ export default function Landing() {
       <section id="producto" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Una plataforma para todo el ciclo del cliente
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -220,20 +220,20 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FLUJO — sección morada committed (color = voz) */}
-      <section id="flujo" className="bg-primary text-white">
+      {/* FLUJO — sección grafito, acentos mandarina (premium) */}
+      <section id="flujo" className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
-          <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-5xl leading-tight max-w-2xl">
-            Del presupuesto al cliente activo, automático.
+          <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-5xl leading-tight max-w-2xl">
+            Del presupuesto al cliente activo, <span className="text-primary">en automático.</span>
           </h2>
           <div className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
             {FLUJO.map(([t, d], i) => (
               <div key={t}>
-                <div className="font-display text-2xl font-bold text-white/40">
+                <div className="font-display text-2xl font-extrabold text-primary">
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="mt-3 font-display font-semibold text-lg">{t}</h3>
-                <p className="mt-2 text-sm text-white/75 leading-relaxed">{d}</p>
+                <h3 className="mt-3 font-display font-bold text-lg">{t}</h3>
+                <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{d}</p>
               </div>
             ))}
           </div>
@@ -244,7 +244,7 @@ export default function Landing() {
       <section className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-5">
-            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Diseñado para quien la competencia ignora
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -271,7 +271,7 @@ export default function Landing() {
       <section className="bg-soft">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
           <div className="max-w-2xl">
-            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Suscripción mensual, sin instalaciones
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -295,7 +295,7 @@ export default function Landing() {
       <section id="vision" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-bold tracking-[-0.015em] text-3xl sm:text-4xl leading-tight">
               Hacia el estudio totalmente digital
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -319,11 +319,12 @@ export default function Landing() {
       {/* CONTACTO */}
       <section id="contacto" className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
-          <h2 className="font-display font-semibold tracking-[-0.01em] text-4xl sm:text-6xl leading-[1.05] max-w-3xl">
-            ¿Conversamos sobre lawkit?
+          <h2 className="font-display font-extrabold tracking-[-0.02em] text-4xl sm:text-6xl leading-[1.03] max-w-3xl">
+            Tu estudio puede funcionar mejor. <span className="text-primary">Hablemos.</span>
           </h2>
           <p className="mt-6 text-lg text-zinc-400 max-w-xl leading-relaxed">
-            Estamos construyendo el software de gestión que el abogado necesita.
+            Estamos construyendo el software de gestión que el abogado
+            independiente realmente puede usar. Cuéntanos de tu estudio.
           </p>
           <a href="mailto:contacto@lawkit.cl"
             className="mt-10 inline-block bg-primary text-white px-7 py-3.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors">

@@ -4,21 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta oficial lawkit — dirección "Estudio sereno"
+        // Paleta oficial lawkit — dirección "Grafito + mandarina"
         primary: {
-          DEFAULT: '#2F4A3C',  // verde pino — acento de marca, botones
-          light:   '#3D6150',
-          dark:    '#243A2F',
+          DEFAULT: '#FF7A2E',  // mandarina — acento / CTA
+          light:   '#FF9A5C',
+          dark:    '#E2620F',  // hover / pressed
         },
-        // Neutros cálidos tintados (impeccable: nada de #000/#fff puro)
-        carbon:  '#20211C',    // tinta de oliva casi-negra — superficies oscuras, texto
-        bone:    '#F4F1EA',    // papel cálido — fondos
-        soft:    '#ECE8DE',    // papel secundario — fondos secundarios, hover
-        muted:   '#6B6A5F',    // gris-oliva — texto secundario
+        teal: {
+          DEFAULT: '#1C6E63',  // verdemar — 2º acento, links, acciones secundarias
+          soft:    '#D6EBE7',
+        },
+        // Neutros cálidos (impeccable: nada de #000/#fff puro)
+        carbon:  '#1F2125',    // grafito — superficies oscuras, texto fuerte
+        ink2:    '#3A3D44',    // tinta media — texto secundario
+        bone:    '#FAFAF7',    // papel — fondos
+        soft:    '#EFEEEA',    // papel 2 — fondos secundarios, hover
+        line:    '#DED9CF',    // bordes cálidos
+        muted:   '#6F6C64',    // piedra oscura — texto secundario legible
       },
       fontFamily: {
-        sans:    ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
-        display: ['Spectral', 'Georgia', 'serif'],
+        sans:    ['Figtree', 'system-ui', 'sans-serif'],
+        display: ['Figtree', 'system-ui', 'sans-serif'],
       },
     },
   },
