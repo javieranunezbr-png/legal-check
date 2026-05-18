@@ -16,7 +16,7 @@ function textoAHtml(texto, link) {
     .replace(/>/g, '&gt;');
 
   return escapado
-    .replace(/\[link\]/g, `<a href="${link}" style="color:#9A6510">${link}</a>`)
+    .replace(/\[link\]/g, `<a href="${link}" style="color:#FF7A2E">${link}</a>`)
     .split('\n')
     .map(l => l.trim() ? `<p style="margin:0 0 12px 0">${l}</p>` : '')
     .join('');
@@ -33,12 +33,12 @@ function plantilla({ mensaje, link, nombreAbogado }) {
     <tr><td align="center">
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">
         <tr><td style="padding:28px 32px 20px 32px;text-align:center;background-color:#1F2125;">
-          <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px;color:#ffffff;line-height:1;">lawkit<span style="display:inline-block;width:8px;height:8px;background-color:#E0A52E;border-radius:50%;margin-left:4px;vertical-align:baseline;"></span></div>
+          <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px;color:#ffffff;line-height:1;">lawkit<span style="display:inline-block;width:8px;height:8px;background-color:#FF7A2E;border-radius:50%;margin-left:4px;vertical-align:baseline;"></span></div>
         </td></tr>
         <tr><td style="padding:28px 32px;font-size:15px;line-height:1.6;color:#334155;">
           ${cuerpo}
           <div style="text-align:center;margin:28px 0 8px 0;">
-            <a href="${link}" style="display:inline-block;background-color:#E0A52E;color:#1F2125;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;">
+            <a href="${link}" style="display:inline-block;background-color:#FF7A2E;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;">
               Ver presupuesto
             </a>
           </div>
@@ -96,14 +96,14 @@ function plantillaPortalIngreso({ nombreCliente, link, nombreAbogado }) {
     <tr><td align="center">
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">
         <tr><td style="padding:28px 32px 20px 32px;text-align:center;background-color:#1F2125;">
-          <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px;color:#ffffff;line-height:1;">lawkit<span style="display:inline-block;width:8px;height:8px;background-color:#E0A52E;border-radius:50%;margin-left:4px;vertical-align:baseline;"></span></div>
+          <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px;color:#ffffff;line-height:1;">lawkit<span style="display:inline-block;width:8px;height:8px;background-color:#FF7A2E;border-radius:50%;margin-left:4px;vertical-align:baseline;"></span></div>
         </td></tr>
         <tr><td style="padding:28px 32px;font-size:15px;line-height:1.6;color:#334155;">
           <p style="margin:0 0 12px 0">Hola ${nombreCliente || ''},</p>
           <p style="margin:0 0 12px 0">¡Gracias por confiar en nosotros! Recibimos tu primer pago.</p>
           <p style="margin:0 0 20px 0">Para terminar de ingresarte como cliente y comenzar a trabajar en tu caso, necesitamos algunos datos. Solo te tomará unos minutos.</p>
           <div style="text-align:center;margin:28px 0 8px 0;">
-            <a href="${link}" style="display:inline-block;background-color:#E0A52E;color:#1F2125;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;">
+            <a href="${link}" style="display:inline-block;background-color:#FF7A2E;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;">
               Completar mis datos
             </a>
           </div>

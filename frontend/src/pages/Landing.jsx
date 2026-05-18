@@ -111,10 +111,10 @@ function ProductoVisual() {
             const hoy = n === 9
             return (
               <div key={n} className={`aspect-square rounded-md flex flex-col items-center justify-center text-[10px] ${
-                hoy ? 'bg-primary text-carbon font-bold' : 'bg-white/[0.04] text-zinc-400'
+                hoy ? 'bg-primary text-white font-semibold' : 'bg-white/[0.04] text-zinc-400'
               }`}>
                 {n}
-                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-carbon lk-pulse' : dot[ev]}`} />}
+                {ev && <span className={`w-1 h-1 rounded-full mt-0.5 ${hoy ? 'bg-white lk-pulse' : dot[ev]}`} />}
               </div>
             )
           })}
@@ -205,7 +205,7 @@ export default function Landing() {
               </Rise>
               <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
                 <a href="#flujo"
-                  className="bg-primary text-carbon px-6 py-3.5 rounded-lg font-bold shadow-xl shadow-primary/20 hover:bg-primary-light hover:-translate-y-0.5 transition-all duration-300">
+                  className="bg-primary text-white px-6 py-3.5 rounded-lg font-bold shadow-xl shadow-primary/25 hover:bg-primary-dark hover:-translate-y-0.5 transition-all duration-300">
                   Ver cómo funciona
                 </a>
                 <a href="#contacto"
