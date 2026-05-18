@@ -1,27 +1,34 @@
 # DESIGN — lawkit
 
+## Dirección: "Estudio sereno"
+
+Lujo silencioso para el abogado independiente y el estudio jurídico. Cálido,
+humano, con trayectoria. Vibra de bufete boutique, no de SaaS ruidoso. La
+distinción viene de la calma y el oficio, no de la estridencia.
+
 ## Estrategia de color
 
-**Committed.** Un solo color saturado (el morado de marca) carga la identidad;
-el resto son neutros tintados hacia ese hue. No es morado-IA decorativo: es la
-identidad ya establecida del producto. Sin gradientes de morado, sin texto con
-gradiente, sin glassmorphism.
+**Committed cálido.** Un verde pino apagado carga la identidad sobre papel
+cálido y tinta de oliva. Nada de morado, nada de azul corporativo, nada de
+dorado/balanza. Sin gradientes, sin texto con gradiente, sin glassmorphism.
 
-- `primary` morado `#8B5CF6` (dark `#7C3AED`, light `#A78BFA`)
-- `carbon` casi-negro tintado a violeta `#0B0A0F` (texto, superficies oscuras)
-- `bone` blanco-hueso tintado `#FBFAFC` (fondo)
-- `soft` gris tintado `#F4F3F7` (fondos secundarios, hover)
-- `muted` gris-violeta `#6F6D7B` (texto secundario)
+- `primary` pino `#2F4A3C` (dark `#243A2F`, light `#3D6150`)
+- `carbon` tinta cálida casi-negra `#20211C` (texto, superficies oscuras)
+- `bone` papel cálido `#F4F1EA` (fondo)
+- `soft` papel secundario `#ECE8DE` (fondos secundarios, hover)
+- `muted` gris-oliva `#6B6A5F` (texto secundario)
 
-Regla: ningún `#000`/`#fff` puro. Texto gris nunca sobre fondo de color (usar
-tono del propio color o transparencia).
+Regla: ningún `#000`/`#fff` puro; todos los neutros tintados cálidos. Texto
+gris nunca sobre fondo de color (usar tono del propio color o transparencia).
 
 ## Tipografía
 
-- **Display (titulares de marca):** Schibsted Grotesk. Grotesca contemporánea,
-  confiada, no en la lista de reflejos (no Inter / DM / Space / Plus Jakarta).
-  Escala fluida con `clamp()`, contraste de peso fuerte (≥1.25 entre pasos).
-- **Cuerpo / app:** Inter (ya es la identidad de la aplicación; se preserva).
+- **Display (titulares):** Spectral. Serif humanista con calma editorial, fuera
+  de los clichés (no Fraunces / Playfair / Cormorant / Newsreader). Pesos
+  500–700, tracking normal o levemente negativo (los serif no quieren
+  tracking-tight agresivo).
+- **Cuerpo / app:** Hanken Grotesk. Grotesca humanista cálida, legible, fuera
+  de la lista de reflejos (no Inter / DM / Space / Plus Jakarta).
 - Largo de línea de cuerpo: 60–72ch.
 
 ## Layout

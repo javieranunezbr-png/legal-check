@@ -5,8 +5,8 @@ import Spinner from '../../components/ui/Spinner'
 
 const TIPOS = {
   audiencia: { label: 'Audiencia', dot: 'bg-red-500',     chip: 'bg-red-50 text-red-700 border-red-200' },
-  gestion:   { label: 'Gestión',   dot: 'bg-violet-500',  chip: 'bg-violet-50 text-violet-700 border-violet-200' },
-  reunion:   { label: 'Reunión',   dot: 'bg-blue-500',    chip: 'bg-blue-50 text-blue-700 border-blue-200' },
+  gestion:   { label: 'Gestión',   dot: 'bg-primary',     chip: 'bg-primary/10 text-primary border-primary/25' },
+  reunion:   { label: 'Reunión',   dot: 'bg-sky-600',     chip: 'bg-sky-50 text-sky-700 border-sky-200' },
   plazo:     { label: 'Plazo',     dot: 'bg-amber-500',   chip: 'bg-amber-50 text-amber-700 border-amber-200' },
   otro:      { label: 'Otro',      dot: 'bg-zinc-400',    chip: 'bg-zinc-50 text-zinc-600 border-zinc-200' },
 }

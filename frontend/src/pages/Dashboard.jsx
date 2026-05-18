@@ -67,8 +67,8 @@ export default function Dashboard() {
   const porcentajeCobrado = pct(cobros_mes.cobrado, cobros_mes.esperado)
 
   const TIPO_DOT = {
-    audiencia: 'bg-red-500', gestion: 'bg-violet-500',
-    reunion: 'bg-blue-500', plazo: 'bg-amber-500', otro: 'bg-zinc-400',
+    audiencia: 'bg-red-500', gestion: 'bg-primary',
+    reunion: 'bg-sky-600', plazo: 'bg-amber-500', otro: 'bg-zinc-400',
   }
   const fechaCorta = (iso) =>
     new Date(iso).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short' })

@@ -142,7 +142,7 @@ export default function Landing() {
               Software de gestión jurídica
             </Rise>
             <Rise as="h1" delay={80}
-              className="mt-5 font-display font-extrabold tracking-tight text-carbon text-5xl sm:text-7xl leading-[1.02]">
+              className="mt-5 font-display font-semibold tracking-[-0.015em] text-carbon text-5xl sm:text-7xl leading-[1.02]">
               El estudio jurídico,
               <br />
               <span className="text-primary">ordenado de verdad.</span>
@@ -174,7 +174,7 @@ export default function Landing() {
       <section className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
           <div className="grid lg:grid-cols-12 gap-12">
-            <h2 className="lg:col-span-5 font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+            <h2 className="lg:col-span-5 font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
               El abogado independiente pierde tiempo y dinero en administración.
             </h2>
             <ol className="lg:col-span-7 lg:pt-2">
@@ -195,7 +195,7 @@ export default function Landing() {
       <section id="producto" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
               Una plataforma para todo el ciclo del cliente
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -223,7 +223,7 @@ export default function Landing() {
       {/* FLUJO — sección morada committed (color = voz) */}
       <section id="flujo" className="bg-primary text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
-          <h2 className="font-display font-bold tracking-tight text-3xl sm:text-5xl leading-tight max-w-2xl">
+          <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-5xl leading-tight max-w-2xl">
             Del presupuesto al cliente activo, automático.
           </h2>
           <div className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
@@ -244,7 +244,7 @@ export default function Landing() {
       <section className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-5">
-            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
               Diseñado para quien la competencia ignora
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -271,7 +271,7 @@ export default function Landing() {
       <section className="bg-soft">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-28">
           <div className="max-w-2xl">
-            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
               Suscripción mensual, sin instalaciones
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -295,7 +295,7 @@ export default function Landing() {
       <section id="vision" className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <h2 className="font-display font-bold tracking-tight text-3xl sm:text-4xl leading-tight">
+            <h2 className="font-display font-semibold tracking-[-0.01em] text-3xl sm:text-4xl leading-tight">
               Hacia el estudio totalmente digital
             </h2>
             <p className="mt-5 text-muted leading-relaxed">
@@ -319,7 +319,7 @@ export default function Landing() {
       {/* CONTACTO */}
       <section id="contacto" className="bg-carbon text-white">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24 sm:py-32">
-          <h2 className="font-display font-bold tracking-tight text-4xl sm:text-6xl leading-[1.05] max-w-3xl">
+          <h2 className="font-display font-semibold tracking-[-0.01em] text-4xl sm:text-6xl leading-[1.05] max-w-3xl">
             ¿Conversamos sobre lawkit?
           </h2>
           <p className="mt-6 text-lg text-zinc-400 max-w-xl leading-relaxed">

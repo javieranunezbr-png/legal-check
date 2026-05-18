@@ -18,9 +18,7 @@ planillas ni procesos manuales.
 
 ## Voz de marca
 
-Tres palabras-objeto: **preciso, sobrio, confiable.** Como un buen escrito
-jurídico: claro, sin adorno, cada palabra cuenta. Nada de jerga de startup,
-nada de promesas vacías. Transmite competencia tranquila, no entusiasmo ruidoso.
+Tres palabras-objeto: **sereno, cálido, con oficio.** Como un buen escrito jurídico y un bufete con trayectoria: claro, sin adorno, confiable. Calma profesional, nada de tono growth-hacker ni entusiasmo ruidoso.
 
 ## Anti-referencias
 
