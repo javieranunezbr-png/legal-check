@@ -143,14 +143,14 @@ export default function Landing() {
             </Rise>
             <Rise as="h1" delay={80}
               className="mt-5 font-display font-extrabold tracking-[-0.02em] text-carbon text-5xl sm:text-7xl leading-[1.0]">
-              Menos papeleo.
+              Todo tu estudio,
               <br />
-              <span className="text-primary">Más abogacía.</span>
+              <span className="text-primary">en un solo lugar.</span>
             </Rise>
             <Rise as="p" delay={160}
               className="mt-7 text-lg text-ink2 leading-relaxed max-w-xl">
-              Clientes, presupuestos, cobros en cuotas y agenda en un solo
-              lugar. Cierra presupuestos más rápido, cobra a tiempo y no
+              Clientes, presupuestos, cobros en cuotas y agenda, conectados
+              entre sí. Cierra presupuestos más rápido, cobra a tiempo y no
               vuelvas a perder un plazo. Deja la planilla atrás.
             </Rise>
             <Rise delay={240} className="mt-9 flex flex-wrap items-center gap-3">
